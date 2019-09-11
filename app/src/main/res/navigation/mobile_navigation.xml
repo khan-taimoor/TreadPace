@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" android:id="@+id/mobile_navigation"
+    app:startDestination="@id/homeFragment"
+    xmlns:tools="http://schemas.android.com/tools"
+    >
+
+    <fragment
+        android:id="@+id/homeFragment"
+        android:name="dev.taimoor.treadpace.HomeFragment"
+        android:label="HomeFragment"
+        tools:layout="@layout/home_layout"
+        >
+        <action
+            android:id="@+id/action_homeFragment_to_runFragment"
+            app:destination="@id/runFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/runFragment"
+        android:name="dev.taimoor.treadpace.RunFragment"
+        android:label="RunFragment"
+        tools:layout="@layout/run_layout"
+        />
+</navigation>
