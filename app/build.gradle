@@ -7,6 +7,7 @@ apply plugin: 'kotlin-android-extensions'
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.2"
+
     defaultConfig {
         applicationId "dev.taimoor.treadpace"
         minSdkVersion 24
@@ -40,6 +41,9 @@ dependencies {
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
+    implementation 'com.google.maps.android:android-maps-utils:0.5'
+
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
 
     implementation fileTree(dir: 'libs', include: ['*.jar'])

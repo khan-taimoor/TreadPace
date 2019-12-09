@@ -2,13 +2,82 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <TextView
-        android:id="@+id/cartText"
+    <com.google.android.gms.maps.MapView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="RUN"
-        android:textAlignment="center"
-        android:textSize="52sp" />
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:id="@+id/map_view" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:id="@+id/start_run_layout">
+
+        <Button
+            android:layout_height="fill_parent"
+            android:layout_width="match_parent"
+            android:layout_margin="48dp"
+            android:id="@+id/start_run_button"
+            android:text="Start run"
+            />
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:visibility="gone"
+        android:id="@+id/in_run_layout">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dist"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:text="Dist">
+
+        </TextView>
+
+        <Chronometer
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/chrono"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+
+            android:text="Time">
+
+        </Chronometer>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/pace"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/dist"
+
+            android:text="Pace" >
+
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/treadmill_pace"
+            android:text="Treadmill Pace"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/chrono"
+            >
+
+        </TextView>
+
+    </RelativeLayout>
+
 
 
 </LinearLayout>
