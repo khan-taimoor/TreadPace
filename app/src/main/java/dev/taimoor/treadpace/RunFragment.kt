@@ -69,7 +69,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             if(location != null){
                 Toast.makeText(context, "yea", Toast.LENGTH_SHORT).show()
-                this.map?.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder().zoom(15.0f).target(LatLng(location.latitude, location.longitude)).build()))
+                //this.map?.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder().tilt(45.0f).zoom(15.0f).target(LatLng(location.latitude, location.longitude)).build()))
+                this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15.0f))
             }
         }
 
