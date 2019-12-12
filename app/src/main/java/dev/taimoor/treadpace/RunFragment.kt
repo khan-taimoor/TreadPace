@@ -24,6 +24,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var map: GoogleMap? = null
     private var mapView: MapView? = null
     private var uiSettings : UiSettings? = null
+    private var currentLocation : Location = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
 
 
@@ -70,7 +71,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             if(location != null){
                 Toast.makeText(context, "yea", Toast.LENGTH_SHORT).show()
                 //this.map?.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder().tilt(45.0f).zoom(15.0f).target(LatLng(location.latitude, location.longitude)).build()))
-                this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15.0f))
+                currentLocation = location
+                this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(currentLocation.latitude, currentLocation.longitude), 15.0f))
             }
         }
 
