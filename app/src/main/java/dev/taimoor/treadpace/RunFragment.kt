@@ -5,6 +5,7 @@ import android.content.IntentSender
 import android.location.Location
 import android.net.wifi.WifiManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +30,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var uiSettings : UiSettings? = null
     private var currentLocation : Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private lateinit var locationCallback: LocationCallback
+    private val TAG = "In RunFragment: "
 
 
     override fun onCreateView(
@@ -72,14 +75,31 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
             if(location != null){
-                Toast.makeText(context, "yea", Toast.LENGTH_SHORT).show()
                 //this.map?.moveCamera(CameraUpdateFactory.newCameraPosition(CameraPosition.builder().tilt(45.0f).zoom(15.0f).target(LatLng(location.latitude, location.longitude)).build()))
                 currentLocation = location
                 this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(location.latitude, location.longitude), 15.0f))
             }
         }
 
+        locationCallback = object : LocationCallback(){
+            override fun onLocationResult(locationResult: LocationResult?) {
+                locationResult ?: return
+
+                for(location in locationResult.locations){
+                    Log.d(TAG, "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}")
+                    Toast.makeText(activity, "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}", Toast.LENGTH_LONG).show()
+                }
+            }
+        }
+
         createLocationRequest()
+
+
+
+
+
+        Toast.makeText(context, "MADE LOCATION CALLBACK@", Toast.LENGTH_LONG).show()
+
     }
 
 
@@ -90,8 +110,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
-
-
 
         var builder : LocationSettingsRequest.Builder? = null
         var client : SettingsClient? = null
@@ -109,20 +127,19 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
         safeLet(builder, client) { b, c ->
             task = c.checkLocationSettings(b.build())
-            Toast.makeText(context, "CHECKING LOCATION SETTINGS@", Toast.LENGTH_LONG).show()
+            //Toast.makeText(context, "CHECKING LOCATION SETTINGS@", Toast.LENGTH_LONG).show()
 
         }
 
 
         task?.addOnSuccessListener { locationSettingsResponse ->
-            Toast.makeText(context, "location settings request MADE", Toast.LENGTH_LONG).show()
+            //Toast.makeText(context, "location settings request MADE", Toast.LENGTH_LONG).show()
 
         }
 
         task?.addOnFailureListener { exception ->
 
-            Toast.makeText(context, "location settings request FAILED", Toast.LENGTH_LONG).show()
-
+            //Toast.makeText(context, "location settings request FAILED", Toast.LENGTH_LONG).show()
             if (exception is ResolvableApiException){
                 // Location settings are not satisfied, but this can be fixed
                 // by showing the user a dialog.
@@ -136,8 +153,17 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
+        locationRequest?.let {
+            this.startLocationUpdates(it)
+        }
 
 
+    }
+
+    private fun startLocationUpdates(locationRequest: LocationRequest) {
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+            locationCallback,
+            Looper.getMainLooper())
     }
 
     // https://www.reddit.com/r/androiddev/comments/6nuxb8/null_checking_multiple_vars_in_kotlin/ reddit user gonemad16
