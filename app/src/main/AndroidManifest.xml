@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+
 
 
     <application
@@ -38,9 +40,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleMapsAPIKey" />
 
-
-
-    </application>
+</application>
 
     <uses-feature
         android:glEsVersion="0x00020000"

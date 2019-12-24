@@ -2,6 +2,7 @@ package dev.taimoor.treadpace
 
 import android.app.Activity
 import android.content.ClipData
+import android.content.IntentSender
 import android.content.res.Resources
 import android.os.Bundle
 import android.util.Log
@@ -17,6 +18,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import androidx.navigation.ui.*
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
@@ -46,7 +50,6 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBar(navController, appBarConfiguration)
 
-        //setupNavigationMenu(navController)
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val dest: String = try {
@@ -60,9 +63,8 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT).show()
             Log.d("NavigationActivity", "Navigated to $dest")
         }
-
-
     }
+
     private fun setupActionBar(navController: NavController,
                                appBarConfig: AppBarConfiguration) {
        // This allows NavigationUI to decide what label to show in the action bar

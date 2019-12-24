@@ -31,6 +31,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var currentLocation : Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    private var locationRequest : LocationRequest? = null
     private val TAG = "In RunFragment: "
 
 
@@ -42,6 +43,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     ): View? {
         setHasOptionsMenu(true)
 
+        val safeArgs: RunFragmentArgs by navArgs()
+        this.locationRequest = safeArgs.locationRequest
         return inflater.inflate(R.layout.run_layout, container, false)
     }
 
@@ -92,73 +95,17 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        createLocationRequest()
-
-
-
-
-
-        Toast.makeText(context, "MADE LOCATION CALLBACK@", Toast.LENGTH_LONG).show()
+        startRun()
 
     }
 
-
-    // from Google
-    fun createLocationRequest() {
-        val locationRequest = LocationRequest.create()?.apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        var builder : LocationSettingsRequest.Builder? = null
-        var client : SettingsClient? = null
-
-        locationRequest?.let {
-            builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        }
-
-        activity?.let {
-            client = LocationServices.getSettingsClient(it.applicationContext)
-        }
-
-        var task: Task<LocationSettingsResponse>? = null
-        Log.d("In run fragment", "Making sure I get here.")
-
-        safeLet(builder, client) { b, c ->
-            task = c.checkLocationSettings(b.build())
-            //Toast.makeText(context, "CHECKING LOCATION SETTINGS@", Toast.LENGTH_LONG).show()
-
-        }
-
-
-        task?.addOnSuccessListener { locationSettingsResponse ->
-            //Toast.makeText(context, "location settings request MADE", Toast.LENGTH_LONG).show()
-
-        }
-
-        task?.addOnFailureListener { exception ->
-
-            //Toast.makeText(context, "location settings request FAILED", Toast.LENGTH_LONG).show()
-            if (exception is ResolvableApiException){
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    exception.startResolutionForResult(activity, 1)
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
-                }
-            }
-        }
-
-        locationRequest?.let {
+    fun startRun(){
+        this.locationRequest?.let {
             this.startLocationUpdates(it)
         }
-
-
     }
+
+
 
     private fun startLocationUpdates(locationRequest: LocationRequest) {
         fusedLocationClient.requestLocationUpdates(locationRequest,
