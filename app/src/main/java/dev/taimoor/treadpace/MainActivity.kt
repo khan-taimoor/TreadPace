@@ -1,9 +1,13 @@
 package dev.taimoor.treadpace
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ClipData
+import android.content.Context
 import android.content.IntentSender
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -50,6 +54,7 @@ class MainActivity : AppCompatActivity() {
 
         setupActionBar(navController, appBarConfiguration)
 
+        createNotificationChannel()
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val dest: String = try {
@@ -62,6 +67,24 @@ class MainActivity : AppCompatActivity() {
             Toast.makeText(this@MainActivity, "Navigated to $dest",
                 Toast.LENGTH_SHORT).show()
             Log.d("NavigationActivity", "Navigated to $dest")
+        }
+    }
+
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("60", name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
         }
     }
 

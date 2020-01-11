@@ -1,25 +1,25 @@
 package dev.taimoor.treadpace
 
+import android.content.ComponentName
 import android.content.Context
-import android.content.IntentSender
+import android.content.Intent
+import android.content.ServiceConnection
 import android.location.Location
-import android.net.wifi.WifiManager
 import android.os.Bundle
-import android.os.Looper
+import android.os.IBinder
+import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.navArgs
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.tasks.Task
 import kotlinx.android.synthetic.main.run_layout.*
 
 class RunFragment : Fragment(), OnMapReadyCallback {
@@ -32,7 +32,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private var locationRequest : LocationRequest? = null
-    private val TAG = "In RunFragment: "
 
 
     override fun onCreateView(
@@ -65,6 +64,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             mapView?.onResume()
             mapView?.getMapAsync(this)
         }
+
+        Log.i("RunFragment", "View Created")
+
     }
 
 
@@ -84,34 +86,67 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        locationCallback = object : LocationCallback(){
-            override fun onLocationResult(locationResult: LocationResult?) {
-                locationResult ?: return
 
-                for(location in locationResult.locations){
-                    Log.d(TAG, "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}")
-                    Toast.makeText(activity, "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}", Toast.LENGTH_LONG).show()
-                }
-            }
+
+        val serviceIntent = Intent(this.context, RunLocationService::class.java)
+
+
+        //val bndl = bundleOf(Pair("locationRequest", locationRequest)
+         //   , Pair("fusedLocationClient", Bundle.putPfusedLocationClient))
+
+        //val bundle = Bundle()
+        //bundle.putParcelable("locationRequest", locationRequest)
+        //bundle.putParcelable("fusedLocationClient", fusedLocationClient as Parcelable?)
+
+        //serviceIntent.putExtras(bundle)
+        ContextCompat.startForegroundService(context as Context, serviceIntent)
+
+        //val binder = service as RunLocationService.LocalBinder
+
+        /*
+        val intent = Intent(this.context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         }
 
-        startRun()
+        val pendingIntent = PendingIntent.getActivity(this.context, 0, intent, 0)
 
-    }
 
-    fun startRun(){
-        this.locationRequest?.let {
-            this.startLocationUpdates(it)
+        /*
+        val pending = NavDeepLinkBuilder(this.context as Context)
+            .setGraph(R.navigation.mobile_navigation)
+            .setDestination(R.id.runFragment)
+            .createPendingIntent()
+         */
+
+
+        val builder = NotificationCompat.Builder(this.context as Context, "60")
+        builder.setContentTitle("Notification Title")
+            .setContentText("Notification text")
+            .setContentIntent(pendingIntent)
+            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+
+
+
+        with(NotificationManagerCompat.from(this.activity as Context)){
+            notify(60, builder.build())
         }
+        Log.i("RunFragment", "Notification Created?")
+
+        */
+
+
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.i("RunFragment", "On Pause")
     }
 
 
 
-    private fun startLocationUpdates(locationRequest: LocationRequest) {
-        fusedLocationClient.requestLocationUpdates(locationRequest,
-            locationCallback,
-            Looper.getMainLooper())
-    }
 
     // https://www.reddit.com/r/androiddev/comments/6nuxb8/null_checking_multiple_vars_in_kotlin/ reddit user gonemad16
     // take in 2 variables, p1 and p2, and a lambda
