@@ -1,5 +1,6 @@
 package dev.taimoor.treadpace
 
+import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -7,12 +8,14 @@ import android.content.ServiceConnection
 import android.location.Location
 import android.os.Bundle
 import android.os.IBinder
+import android.os.Parcel
 import android.os.Parcelable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -21,6 +24,12 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
+
+
+
+
+
+
 
 class RunFragment : Fragment(), OnMapReadyCallback {
 
@@ -32,6 +41,15 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
     private var locationRequest : LocationRequest? = null
+    lateinit var runLocationService: RunLocationService
+    private var mBound = false
+
+
+    private var fastestInterval = 5000
+    private var interval = 10000
+    private var priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+
+
 
 
     override fun onCreateView(
@@ -43,7 +61,11 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
 
         val safeArgs: RunFragmentArgs by navArgs()
-        this.locationRequest = safeArgs.locationRequest
+        fastestInterval = safeArgs.fastestInterval
+        interval = safeArgs.interval
+        priority = safeArgs.priority
+        locationRequest = safeArgs.locationRequest
+
         return inflater.inflate(R.layout.run_layout, container, false)
     }
 
@@ -91,53 +113,24 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         val serviceIntent = Intent(this.context, RunLocationService::class.java)
 
 
-        //val bndl = bundleOf(Pair("locationRequest", locationRequest)
-         //   , Pair("fusedLocationClient", Bundle.putPfusedLocationClient))
+        serviceIntent.putExtra("locationRequest", locationRequest)
 
-        //val bundle = Bundle()
+
         //bundle.putParcelable("locationRequest", locationRequest)
-        //bundle.putParcelable("fusedLocationClient", fusedLocationClient as Parcelable?)
 
-        //serviceIntent.putExtras(bundle)
         ContextCompat.startForegroundService(context as Context, serviceIntent)
 
-        //val binder = service as RunLocationService.LocalBinder
 
-        /*
-        val intent = Intent(this.context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
+
+
+
+        end_run_button.setOnClickListener {
+
+            val stopServiceIntent = Intent(this.context, RunLocationService::class.java)
+            stopServiceIntent.setAction("STOP SERVICE")
+            this.activity?.applicationContext?.stopService(serviceIntent)
+            //runLocationService.stopService(true)
         }
-
-        val pendingIntent = PendingIntent.getActivity(this.context, 0, intent, 0)
-
-
-        /*
-        val pending = NavDeepLinkBuilder(this.context as Context)
-            .setGraph(R.navigation.mobile_navigation)
-            .setDestination(R.id.runFragment)
-            .createPendingIntent()
-         */
-
-
-        val builder = NotificationCompat.Builder(this.context as Context, "60")
-        builder.setContentTitle("Notification Title")
-            .setContentText("Notification text")
-            .setContentIntent(pendingIntent)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-
-
-
-        with(NotificationManagerCompat.from(this.activity as Context)){
-            notify(60, builder.build())
-        }
-        Log.i("RunFragment", "Notification Created?")
-
-        */
-
-
-
-
     }
 
     override fun onPause() {

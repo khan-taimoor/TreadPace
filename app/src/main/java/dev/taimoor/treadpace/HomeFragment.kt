@@ -53,9 +53,12 @@ class HomeFragment : Fragment() {
         }
 
         fab?.setOnClickListener {
-
-            val locationRequest = createLocationRequest()
-            val action = HomeFragmentDirections.actionHomeFragmentToRunFragment().setLocationRequest(locationRequest)
+            val action = HomeFragmentDirections
+                .actionHomeFragmentToRunFragment()
+                .setFastestInterval(5000)
+                .setInterval(10000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setLocationRequest(createLocationRequest())
             findNavController().navigate(action)
         }
 
@@ -115,7 +118,7 @@ class HomeFragment : Fragment() {
     // https://www.reddit.com/r/androiddev/comments/6nuxb8/null_checking_multiple_vars_in_kotlin/ reddit user gonemad16
     // take in 2 variables, p1 and p2, and a lambda
     // if both vars aren't none, execute the block
-    fun <T1: Any, T2: Any, R: Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2)->R?): R? {
+    public fun <T1: Any, T2: Any, R: Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2)->R?): R? {
         return if (p1 != null && p2 != null) block(p1, p2) else null
     }
 

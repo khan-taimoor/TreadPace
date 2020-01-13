@@ -16,10 +16,24 @@
             android:id="@+id/action_homeFragment_to_runFragment"
             app:destination="@id/runFragment">
             <argument
+                android:name="interval"
+                app:argType="integer"
+                android:defaultValue="10000" />
+            <argument
+                android:name="fastestInterval"
+                app:argType="integer"
+                android:defaultValue="5000" />
+            <argument
+                android:name="priority"
+                app:argType="integer"
+                android:defaultValue="100" />
+            <argument
                 android:name="locationRequest"
                 app:argType="com.google.android.gms.location.LocationRequest"
                 app:nullable="true"
                 android:defaultValue="@null" />
+
+
         </action>
 
     </fragment>
@@ -31,10 +45,23 @@
         tools:layout="@layout/run_layout">
 
         <argument
+            android:name="interval"
+            app:argType="integer"
+            android:defaultValue="10000" />
+        <argument
+            android:name="fastestInterval"
+            app:argType="integer"
+            android:defaultValue="5000" />
+        <argument
+            android:name="priority"
+            app:argType="integer"
+            android:defaultValue="100" />
+        <argument
             android:name="locationRequest"
             app:argType="com.google.android.gms.location.LocationRequest"
             app:nullable="true"
             android:defaultValue="@null" />
+
 
     </fragment>
 </navigation>
