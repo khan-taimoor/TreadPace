@@ -87,7 +87,7 @@ class HomeFragment : Fragment() {
         var task: Task<LocationSettingsResponse>? = null
         Log.d("In run fragment", "Making sure I get here.")
 
-        safeLet(builder, client) { b, c ->
+        Util.safeLet(builder, client) { b, c ->
             task = c.checkLocationSettings(b.build())
         }
 
@@ -106,6 +106,7 @@ class HomeFragment : Fragment() {
                     // Show the dialog by calling startResolutionForResult(),
                     // and check the result in onActivityResult().
                     exception.startResolutionForResult(this.activity, 1)
+
                 } catch (sendEx: IntentSender.SendIntentException) {
                     // Ignore the error.
                 }
@@ -115,12 +116,6 @@ class HomeFragment : Fragment() {
         return locationRequest
     }
 
-    // https://www.reddit.com/r/androiddev/comments/6nuxb8/null_checking_multiple_vars_in_kotlin/ reddit user gonemad16
-    // take in 2 variables, p1 and p2, and a lambda
-    // if both vars aren't none, execute the block
-    public fun <T1: Any, T2: Any, R: Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2)->R?): R? {
-        return if (p1 != null && p2 != null) block(p1, p2) else null
-    }
 
 
 }

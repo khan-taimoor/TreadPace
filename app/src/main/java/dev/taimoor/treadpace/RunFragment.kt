@@ -19,6 +19,7 @@ import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
@@ -39,12 +40,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var uiSettings : UiSettings? = null
     private var currentLocation : Location? = null
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var locationCallback: LocationCallback
     private var locationRequest : LocationRequest? = null
-    lateinit var runLocationService: RunLocationService
-    private var mBound = false
-
-
     private var fastestInterval = 5000
     private var interval = 10000
     private var priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -91,7 +87,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
     }
 
-
     override fun onMapReady(map: GoogleMap?) {
         MapsInitializer.initialize(context)
         this.map = map
@@ -113,41 +108,24 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         val serviceIntent = Intent(this.context, RunLocationService::class.java)
 
 
-        serviceIntent.putExtra("locationRequest", locationRequest)
-
-
-        //bundle.putParcelable("locationRequest", locationRequest)
-
-        ContextCompat.startForegroundService(context as Context, serviceIntent)
-
-
-
-
+        start_run_button.setOnClickListener {
+            serviceIntent.putExtra("locationRequest", locationRequest)
+            ContextCompat.startForegroundService(context as Context, serviceIntent)
+            start_run_layout.visibility = View.GONE
+            in_run_layout.visibility = View.VISIBLE
+        }
 
         end_run_button.setOnClickListener {
-
-            val stopServiceIntent = Intent(this.context, RunLocationService::class.java)
-            stopServiceIntent.setAction("STOP SERVICE")
             this.activity?.applicationContext?.stopService(serviceIntent)
-            //runLocationService.stopService(true)
+            val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
+            findNavController().navigate(action)
         }
+
+
     }
 
     override fun onPause() {
         super.onPause()
         Log.i("RunFragment", "On Pause")
     }
-
-
-
-
-    // https://www.reddit.com/r/androiddev/comments/6nuxb8/null_checking_multiple_vars_in_kotlin/ reddit user gonemad16
-    // take in 2 variables, p1 and p2, and a lambda
-    // if both vars aren't none, execute the block
-    fun <T1: Any, T2: Any, R: Any> safeLet(p1: T1?, p2: T2?, block: (T1, T2)->R?): R? {
-        return if (p1 != null && p2 != null) block(p1, p2) else null
-    }
-
-
-
 }

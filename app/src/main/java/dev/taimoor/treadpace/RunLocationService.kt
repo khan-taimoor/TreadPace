@@ -21,43 +21,17 @@ import com.google.android.gms.tasks.Task
 
 class RunLocationService: Service() {
 
-
-    //lateinit var intent : Intent
     lateinit var pendingIntent: PendingIntent
     lateinit var notification: Notification
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
-    private var locationRequest : LocationRequest? = null
-
-
-
-    fun makeToast(){
-        Toast.makeText(applicationContext, "Toast From Service", Toast.LENGTH_LONG).show()
-
-    }
-
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
-
-        //val interval = intent?.getIntExtra("interval", -1)
-        //val fastestInterval = intent?.getIntExtra("fastestInterval", -1)
-        //val priority = intent?.getIntExtra("priority",-1)
-
-        if(intent?.action == "STOP SERVICE"){
-            fusedLocationClient.removeLocationUpdates(locationCallback)
-            stopSelf()
-
-        }
-
         val locationRequest = intent?.getParcelableExtra<LocationRequest>("locationRequest")
-
 
         locationRequest?.let {
             this.startRun(it)
         }
-
-
 
         startForeground(60, notification)
         return START_STICKY
@@ -66,6 +40,7 @@ class RunLocationService: Service() {
     override fun onDestroy() {
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(locationCallback)
+        Log.i(Util.myTag, "From Ending")
         stopSelf()
 
     }
@@ -81,20 +56,11 @@ class RunLocationService: Service() {
         }
     }
 
-
-
-
-
-
-
-
     private fun startLocationUpdates(locationRequest: LocationRequest) {
         fusedLocationClient.requestLocationUpdates(locationRequest,
             locationCallback,
             Looper.getMainLooper())
     }
-
-
 
     override fun onCreate(){
 
@@ -125,60 +91,4 @@ class RunLocationService: Service() {
         }
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
     }
-
-
-    /*
-    fun createLocationRequest(): LocationRequest? {
-        val locationRequest = LocationRequest.create()?.apply {
-            interval = 10000
-            fastestInterval = 5000
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
-
-        var builder: LocationSettingsRequest.Builder? = null
-        var client: SettingsClient? = null
-
-        locationRequest?.let {
-            builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
-        }
-
-        this?.let {
-            client = LocationServices.getSettingsClient(this)
-        }
-
-        var task: Task<LocationSettingsResponse>? = null
-        Log.d("In run fragment", "Making sure I get here.")
-
-        Util.safeLet(builder, client) { b, c ->
-            task = c.checkLocationSettings(b.build())
-        }
-
-
-        task?.addOnSuccessListener { locationSettingsResponse ->
-            //Toast.makeText(context, "location settings request MADE", Toast.LENGTH_LONG).show()
-        }
-
-        task?.addOnFailureListener { exception ->
-
-            //Toast.makeText(context, "location settings request FAILED", Toast.LENGTH_LONG).show()
-            if (exception is ResolvableApiException) {
-                // Location settings are not satisfied, but this can be fixed
-                // by showing the user a dialog.
-                try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-
-                    exception.startResolutionForResult(applicationContext, 1)
-                } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
-                }
-            }
-        }
-
-        return locationRequest
-    }
-
-     */
-
-
 }

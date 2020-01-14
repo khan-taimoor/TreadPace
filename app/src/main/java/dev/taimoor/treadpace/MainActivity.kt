@@ -48,10 +48,6 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
 
-
-
-
-
         setupActionBar(navController, appBarConfiguration)
 
         createNotificationChannel()
@@ -71,6 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
 
+    // TODO: Notifications are currently being made but I should clarify notification channel and stuff
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
