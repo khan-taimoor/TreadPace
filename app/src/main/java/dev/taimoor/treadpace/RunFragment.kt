@@ -109,10 +109,12 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             val serviceIntent = Intent(this.context, RunLocationService::class.java)
             serviceIntent.putExtra("locationRequest", locationRequest)
 
-            Intent(this.activity, RunLocationService::class.java).also { intent ->
+
+            ContextCompat.startForegroundService(context as Context, serviceIntent)
+
+            Intent(this.activity?.applicationContext, RunLocationService::class.java).also { intent ->
                 this.activity?.bindService(intent, connection, Context.BIND_IMPORTANT)
             }
-            ContextCompat.startForegroundService(context as Context, serviceIntent)
             before_run.visibility = View.GONE
             during_run.visibility = View.VISIBLE
 
@@ -138,12 +140,13 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
         end_run_button.setOnClickListener {
+            binder.removeObserver()
+
             val endServiceIntent = Intent(this.context, RunLocationService::class.java)
             this.activity?.applicationContext?.stopService(endServiceIntent)
-            this.activity?.applicationContext?.unbindService(connection)
+            //this.activity?.applicationContext?.unbindService(connection)
             val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
             total_time?.stop()
-            binder.removeObserver()
             findNavController().navigate(action)
         }
 
