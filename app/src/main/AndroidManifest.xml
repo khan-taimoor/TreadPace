@@ -35,6 +35,8 @@
             </intent-filter>
             <nav-graph android:value="@navigation/mobile_navigation" />
 
+
+
         </activity>
 
         <service
@@ -46,6 +48,7 @@
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/GoogleMapsAPIKey" />
+
 
 </application>
 

@@ -1,15 +1,11 @@
 package dev.taimoor.treadpace
 
 import android.app.Service
-import android.content.ComponentName
-import android.content.Context
-import android.content.Intent
-import android.content.ServiceConnection
+import android.content.*
+import android.graphics.Color
+import android.graphics.Point
 import android.location.Location
-import android.os.Bundle
-import android.os.IBinder
-import android.os.Parcel
-import android.os.Parcelable
+import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,15 +21,13 @@ import com.google.android.gms.location.*
 import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
-
-
-
-
-
+import android.os.SystemClock
+import com.google.android.gms.maps.model.Polyline
+import com.google.android.gms.maps.model.PolylineOptions
+import java.util.*
 
 
 class RunFragment : Fragment(), OnMapReadyCallback {
-
 
     private var map: GoogleMap? = null
     private var mapView: MapView? = null
@@ -44,8 +38,10 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var fastestInterval = 5000
     private var interval = 10000
     private var priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-
-
+    private lateinit var pointsObserver : PointsObserver
+    private var polylineOptions = PolylineOptions().color(Color.RED)
+    private lateinit var binder: RunLocationService.RunServiceBinder
+    private val connection = Connection()
 
 
     override fun onCreateView(
@@ -105,21 +101,54 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        val serviceIntent = Intent(this.context, RunLocationService::class.java)
 
 
         start_run_button.setOnClickListener {
+            Log.i(Util.myTag, "Starting start button actions")
+
+            val serviceIntent = Intent(this.context, RunLocationService::class.java)
             serviceIntent.putExtra("locationRequest", locationRequest)
+
+            Intent(this.activity, RunLocationService::class.java).also { intent ->
+                this.activity?.bindService(intent, connection, Context.BIND_IMPORTANT)
+            }
             ContextCompat.startForegroundService(context as Context, serviceIntent)
-            start_run_layout.visibility = View.GONE
-            in_run_layout.visibility = View.VISIBLE
+            before_run.visibility = View.GONE
+            during_run.visibility = View.VISIBLE
+
+            total_time.base = SystemClock.elapsedRealtime()
+            total_time?.start()
+
+
+            total_time?.setOnChronometerTickListener {
+                val time = SystemClock.elapsedRealtime() - it.base
+                val h = (time / 3600000).toInt()
+                val m = ((time - h * 3600000)).toInt() / 60000
+                val s = ((time - h * 3600000 - m * 60000)).toInt() / 1000
+
+                //Log.i(Util.myTag, "$s")
+            }
+
+
+
+            val numba = 10
+            polylineOptions = PolylineOptions().color(Color.RED).width(numba.toFloat())
+            this.map?.addPolyline(polylineOptions)
         }
 
+
         end_run_button.setOnClickListener {
-            this.activity?.applicationContext?.stopService(serviceIntent)
+            val endServiceIntent = Intent(this.context, RunLocationService::class.java)
+            this.activity?.applicationContext?.stopService(endServiceIntent)
+            this.activity?.applicationContext?.unbindService(connection)
             val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
+            total_time?.stop()
+            binder.removeObserver()
             findNavController().navigate(action)
         }
+
+
+        /** Defines callbacks for service binding, passed to bindService()  */
 
 
     }
@@ -128,4 +157,34 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         super.onPause()
         Log.i("RunFragment", "On Pause")
     }
+
+
+    inner class Connection : ServiceConnection{
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            binder = service as RunLocationService.RunServiceBinder
+            pointsObserver = PointsObserver()
+            binder.addObserver(pointsObserver)
+
+
+        }
+
+        override fun onServiceDisconnected(className: ComponentName) {
+            Log.i(Util.myTag, "Service to Binder ended")
+        }
+    }
+
+    inner class PointsObserver : Observer{
+        override fun update(observable: Observable?, p1: Any?) {
+            polylineOptions.add(binder.getMostRecentLatLng())
+
+            // do this a better way
+            map?.clear()
+            map?.addPolyline(polylineOptions)
+            distance_view.setText("" + binder.getDistance())
+            //distance_view.set
+
+            Log.i(Util.myTag, "yeet${binder.getMostRecentLatLng()}")
+        }
+    }
+
 }

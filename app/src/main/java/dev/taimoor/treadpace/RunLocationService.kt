@@ -7,17 +7,22 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
-import android.os.Binder
-import android.os.IBinder
-import android.os.Looper
+import android.location.Location
+import android.os.*
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.tasks.Task
+import java.io.FileDescriptor
+import java.util.*
+import kotlin.properties.Delegates
 
 class RunLocationService: Service() {
 
@@ -25,6 +30,10 @@ class RunLocationService: Service() {
     lateinit var notification: Notification
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
+    private val thread = HandlerThread("Service")
+    private lateinit var binder : RunServiceBinder
+    private val points = ObservablePoints()
+
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         val locationRequest = intent?.getParcelableExtra<LocationRequest>("locationRequest")
@@ -41,12 +50,25 @@ class RunLocationService: Service() {
         super.onDestroy()
         fusedLocationClient.removeLocationUpdates(locationCallback)
         Log.i(Util.myTag, "From Ending")
+        thread.quitSafely()
         stopSelf()
+
+
+        val currentName: MutableLiveData<List<LatLng>> by lazy {
+            MutableLiveData<List<LatLng>>()
+        }
+
 
     }
 
-    override fun onBind(p0: Intent?): IBinder? {
-        return null
+    override fun onBind(intent: Intent?): IBinder? {
+        return binder
+    }
+
+    // look into return value needed here
+    override fun onUnbind(intent: Intent?): Boolean {
+        Log.i(Util.myTag, "Unbinded service")
+        return true
     }
 
 
@@ -64,6 +86,8 @@ class RunLocationService: Service() {
 
     override fun onCreate(){
 
+        this.binder = RunServiceBinder()
+
         val intent = Intent(this, MainActivity::class.java).apply {
             this.flags = Intent.FLAG_ACTIVITY_REORDER_TO_FRONT
         }
@@ -77,6 +101,8 @@ class RunLocationService: Service() {
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
+        thread.start()
+
         notification = builder.build()
 
         this.locationCallback = object : LocationCallback(){
@@ -85,10 +111,77 @@ class RunLocationService: Service() {
 
                 for(location in locationResult.locations){
                     Log.i("LocationService", "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}")
-                    Toast.makeText(applicationContext, "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}", Toast.LENGTH_LONG).show()
+                    //Toast.makeText(applicationContext, "LATITUDE: ${location.latitude}\t LONGITUDE:${location.longitude}\n${locationResult.locations.size}", Toast.LENGTH_LONG).show()
+                    points.addPoint(LatLng(location.latitude, location.longitude))
+
+
+                    Log.i(Util.myTag, "notifying observers\n${points.countObservers()}\n${points.observerSet}}")
                 }
             }
         }
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(applicationContext)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this.applicationContext)
+    }
+
+
+    inner class RunServiceBinder : Binder(){
+        fun addObserver(observer: Observer){
+            this@RunLocationService.points.addObserver(observer)
+        }
+
+        fun removeObserver(){
+            this@RunLocationService.points.deleteObservers()
+        }
+
+        fun getMostRecentLatLng(): LatLng{
+            return this@RunLocationService.points.mostRecentLatLng()
+        }
+
+        fun getDistance(): Int{
+            return this@RunLocationService.points.distance
+        }
+    }
+
+    inner class ObservablePoints : Observable(){
+        val points = mutableListOf<LatLng>()
+        lateinit var loneObserver : Observer
+        var observerSet = false
+        var distance = 0
+        
+        fun asdf(observer: Observer){
+            this.loneObserver = observer
+            observerSet = true
+        }
+
+        fun addPoint(point: LatLng){
+            points.add(point)
+
+            if(points.size>=2){
+                // TODO: Create extension function
+                val mostRecent = Location("").also{
+                    it.latitude = points[points.lastIndex].latitude
+                    it.longitude = points[points.lastIndex].longitude
+                }
+
+                val secondMostRecent = Location("").also {
+                    it.latitude = points[points.lastIndex-1].latitude
+                    it.longitude = points[points.lastIndex-1].longitude
+
+                }
+
+                distance += mostRecent.distanceTo(secondMostRecent).toInt()
+            }
+
+
+
+            this.setChanged()
+            this.notifyObservers()
+            //Log.i(Util.myTag, "notifying observers\n${points.countObservers()}\n${points.observerSet}}")
+
+
+        }
+
+        fun mostRecentLatLng(): LatLng{
+            return points[points.size - 1]
+        }
     }
 }
