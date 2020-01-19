@@ -1,19 +1,14 @@
 package dev.taimoor.treadpace
 
-import android.app.Service
 import android.content.*
 import android.graphics.Color
-import android.graphics.Point
 import android.location.Location
 import android.os.*
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
-import androidx.core.app.ServiceCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -22,7 +17,7 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
 import android.os.SystemClock
-import com.google.android.gms.maps.model.Polyline
+import android.widget.Chronometer
 import com.google.android.gms.maps.model.PolylineOptions
 import java.util.*
 
@@ -42,6 +37,17 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var polylineOptions = PolylineOptions().color(Color.RED)
     private lateinit var binder: RunLocationService.RunServiceBinder
     private val connection = Connection()
+    private var isPaceSet: Boolean = false
+
+    val splits = mutableListOf<Split>()
+    private var timeInSplit = 0
+    private var timeLastSplit = 0
+    private var ticksInSplit = 0
+    private var distanceInSplit = 0
+    private var distanceLastSplit = 0
+
+
+
 
 
     override fun onCreateView(
@@ -127,8 +133,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 val h = (time / 3600000).toInt()
                 val m = ((time - h * 3600000)).toInt() / 60000
                 val s = ((time - h * 3600000 - m * 60000)).toInt() / 1000
-
-                //Log.i(Util.myTag, "$s")
             }
 
 
@@ -184,10 +188,42 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             map?.clear()
             map?.addPolyline(polylineOptions)
             distance_view.setText("" + binder.getDistance())
-            //distance_view.set
 
-            Log.i(Util.myTag, "yeet${binder.getMostRecentLatLng()}")
+            ticksInSplit += 1
+            timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
+            distanceInSplit = binder.getDistance() - distanceLastSplit
+
+            //Log.i(Util.myTag, "MADE IT HERE, ${total_time.getTimeInSeconds()}")
+
+            if(!isPaceSet) {
+                
+                
+                if (timeInSplit > 0){
+                    //Log.i(Util.myTag, "CurrentPace: ${timeInSplit}")
+                }
+                if(timeInSplit > 30){
+                    Log.i(Util.myTag, "Adding run:\ndistance=$distanceInSplit\nticks=$ticksInSplit" +
+                            "\ntimeLastSplit=$timeLastSplit\ncurrentTime=${total_time.getTimeInSeconds()}")
+                    splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds()))
+                    timeLastSplit = total_time.getTimeInSeconds()
+                    distanceLastSplit = binder.getDistance()
+                    timeInSplit = 0
+                    ticksInSplit = 0
+
+                    splits.forEach {
+                        Log.i(Util.myTag, it.toString())
+                    }
+                }
+            }
         }
     }
+
+    fun Chronometer.getTimeInSeconds(): Int{
+        val time = SystemClock.elapsedRealtime() - this.base
+
+        return time.toInt()/1000
+    }
+
+    data class Split(val distance: Number, val numTicks: Int, val startTime: Int, val endTime: Int)
 
 }

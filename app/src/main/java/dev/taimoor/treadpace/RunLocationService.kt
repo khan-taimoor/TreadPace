@@ -115,7 +115,7 @@ class RunLocationService: Service() {
                     points.addPoint(LatLng(location.latitude, location.longitude))
 
 
-                    Log.i(Util.myTag, "notifying observers\n${points.countObservers()}\n${points.observerSet}}")
+                    //Log.i(Util.myTag, "notifying observers\n${points.countObservers()}\n${points.observerSet}}")
                 }
             }
         }
@@ -146,11 +146,6 @@ class RunLocationService: Service() {
         lateinit var loneObserver : Observer
         var observerSet = false
         var distance = 0
-        
-        fun asdf(observer: Observer){
-            this.loneObserver = observer
-            observerSet = true
-        }
 
         fun addPoint(point: LatLng){
             points.add(point)
@@ -171,15 +166,10 @@ class RunLocationService: Service() {
                 distance += mostRecent.distanceTo(secondMostRecent).toInt()
             }
 
-
-
             this.setChanged()
             this.notifyObservers()
             //Log.i(Util.myTag, "notifying observers\n${points.countObservers()}\n${points.observerSet}}")
-
-
         }
-
         fun mostRecentLatLng(): LatLng{
             return points[points.size - 1]
         }
