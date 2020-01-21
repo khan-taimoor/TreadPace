@@ -45,6 +45,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var ticksInSplit = 0
     private var distanceInSplit = 0
     private var distanceLastSplit = 0
+    private var timesOnTreadmill = 2
 
 
 
@@ -180,40 +181,90 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    inner class PointsObserver : Observer{
+    inner class PointsObserver : Observer {
         override fun update(observable: Observable?, p1: Any?) {
             polylineOptions.add(binder.getMostRecentLatLng())
-
-            // do this a better way
             map?.clear()
             map?.addPolyline(polylineOptions)
+
             distance_view.setText("" + binder.getDistance())
 
             ticksInSplit += 1
             timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
             distanceInSplit = binder.getDistance() - distanceLastSplit
 
+
             //Log.i(Util.myTag, "MADE IT HERE, ${total_time.getTimeInSeconds()}")
 
-            if(!isPaceSet) {
-                
-                
-                if (timeInSplit > 0){
-                    //Log.i(Util.myTag, "CurrentPace: ${timeInSplit}")
-                }
-                if(timeInSplit > 30){
+            if (!isPaceSet) {
+
+                if (timeInSplit >= 30) {
+                    /*
                     Log.i(Util.myTag, "Adding run:\ndistance=$distanceInSplit\nticks=$ticksInSplit" +
                             "\ntimeLastSplit=$timeLastSplit\ncurrentTime=${total_time.getTimeInSeconds()}")
-                    splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds()))
+                     */
+
+                    splits.add(
+                        Split(
+                            distanceInSplit,
+                            ticksInSplit,
+                            timeLastSplit,
+                            total_time.getTimeInSeconds(),
+                            true
+                        )
+                    )
+                    pace_split_view.setText("" + distanceInSplit / timeInSplit)
+
                     timeLastSplit = total_time.getTimeInSeconds()
                     distanceLastSplit = binder.getDistance()
                     timeInSplit = 0
                     ticksInSplit = 0
-
-                    splits.forEach {
-                        Log.i(Util.myTag, it.toString())
-                    }
                 }
+
+                if (splits.size == 2) {
+                    isPaceSet = true
+                    val avgPace = splits[0].getPace() + splits[1].getPace()
+                    pace_treadmill_view.setText("" + avgPace)
+                    pace_current_view.setText("STARTING A NEW SPLIT")
+
+                    //TODO: change UI to design in OneNote
+                } else if (splits.size == 1) {
+                    pace_current_view.setText("STARTING A NEW SPLIT")
+
+                } else {
+                    if (timeInSplit != 0) {
+                        pace_current_view.setText("" + distanceInSplit / timeInSplit)
+                    }
+
+                }
+            } else {
+                if (timeInSplit >= 30) {
+
+
+                    splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
+
+                    val pace_difference = kotlin.math.abs(splits.last().getPace() - averagePace())
+                    if(pace_difference < .5){
+                        splits.last().onTreadmill = true
+                        timesOnTreadmill +=1
+                    }
+
+
+                    time_treadmill.setText("$timesOnTreadmill/${splits.size}")
+                    pace_split_view.setText("" + distanceInSplit / timeInSplit)
+                    pace_current_view.setText("STARTING A NEW SPLIT")
+
+
+
+                    timeLastSplit = total_time.getTimeInSeconds()
+                    distanceLastSplit = binder.getDistance()
+                    timeInSplit = 0
+                    ticksInSplit = 0
+                } else if (timeInSplit != 0) {
+                    pace_current_view.setText("" + distanceInSplit / timeInSplit)
+                }
+
+
             }
         }
     }
@@ -224,6 +275,21 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         return time.toInt()/1000
     }
 
-    data class Split(val distance: Number, val numTicks: Int, val startTime: Int, val endTime: Int)
+    fun averagePace(): Double{
+        if(splits.size >= 2){
+            return splits[0].getPace() + splits[1].getPace()/2
+        }
+        else{
+            return -1.0
+        }
+    }
+
+    data class Split(val distance: Int, val numTicks: Int, val startTime: Int, val endTime: Int, var onTreadmill: Boolean){
+        fun getPace(): Double{
+            return (distance*1.0)/(endTime-startTime)
+        }
+
+
+    }
 
 }
