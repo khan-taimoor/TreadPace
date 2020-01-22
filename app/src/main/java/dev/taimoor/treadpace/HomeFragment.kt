@@ -55,7 +55,7 @@ class HomeFragment : Fragment() {
         fab?.setOnClickListener {
             val action = HomeFragmentDirections
                 .actionHomeFragmentToRunFragment()
-                .setFastestInterval(5000)
+                .setFastestInterval(10000)
                 .setInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
                 .setLocationRequest(createLocationRequest())

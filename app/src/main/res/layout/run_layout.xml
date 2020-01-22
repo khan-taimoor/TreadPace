@@ -5,7 +5,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:id="@+id/constraintLayout">
 
     <com.google.android.gms.maps.MapView
         android:id="@+id/map_view"
@@ -35,7 +36,8 @@
         app:layout_constraintEnd_toStartOf="@id/border_vertical"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/border_horizontal"
-        tools:text="Distance" />
+        tools:text="Distance"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/pace_treadmill_view"
@@ -44,7 +46,8 @@
         tools:text="Pace"
         app:layout_constraintEnd_toStartOf="@id/border_vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal" />
+        app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/pace_split_view"
@@ -53,16 +56,18 @@
         android:layout_marginRight="4dp"
         tools:text="Split View"
         app:layout_constraintEnd_toStartOf="@id/pace_separator_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
+        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/pace_current_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
-        tools:text="Split View"
+        tools:text="Current view"
         app:layout_constraintStart_toEndOf="@id/pace_separator_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
+        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/time_treadmill"
@@ -72,7 +77,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/border_horizontal"
         app:layout_constraintBottom_toBottomOf="@id/border_horizontal_2"
-        tools:text="Time on Treadmill" />
+        tools:text="Time on Treadmill"
+        android:visibility="gone"/>
 
     <Chronometer
         android:id="@+id/total_time"
@@ -82,7 +88,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/border_horizontal_2"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Total Time" />
+        tools:text="Total Time"
+        android:visibility="gone"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:layout_width="wrap_content"
@@ -91,32 +98,11 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        android:id="@+id/end_run_button">
+        android:id="@+id/end_run_button"
+        android:visibility="gone">
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
-    <androidx.constraintlayout.widget.Group
-        android:id="@+id/before_run"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="visible"
-        app:constraint_referenced_ids="start_run_button">
-    </androidx.constraintlayout.widget.Group>
 
-    <androidx.constraintlayout.widget.Group
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        android:id="@+id/during_run"
-        app:constraint_referenced_ids="end_run_button,time_treadmill,total_time,pace_group,distance_view">
-    </androidx.constraintlayout.widget.Group>
-
-    <androidx.constraintlayout.widget.Group
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:id="@+id/pace_group"
-        app:constraint_referenced_ids="pace_current_view,pace_treadmill_view,pace_split_view">
-
-    </androidx.constraintlayout.widget.Group>
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/border_horizontal"

@@ -17,7 +17,9 @@ import com.google.android.gms.maps.*
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
 import android.os.SystemClock
+import android.transition.TransitionManager
 import android.widget.Chronometer
+import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.gms.maps.model.PolylineOptions
 import java.util.*
 
@@ -122,8 +124,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             Intent(this.activity?.applicationContext, RunLocationService::class.java).also { intent ->
                 this.activity?.bindService(intent, connection, Context.BIND_IMPORTANT)
             }
-            before_run.visibility = View.GONE
-            during_run.visibility = View.VISIBLE
+
+            TransitionManager.beginDelayedTransition(constraintLayout)
+            val constraintSet = ConstraintSet()
+            constraintSet.load(this.context, R.layout.run_layout_phase_1)
+            constraintSet.applyTo(constraintLayout)
+            TransitionManager.beginDelayedTransition(constraintLayout)
+            constraintSet.applyTo(constraintLayout)
+
 
             total_time.base = SystemClock.elapsedRealtime()
             total_time?.start()
@@ -183,18 +191,16 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
     inner class PointsObserver : Observer {
         override fun update(observable: Observable?, p1: Any?) {
+            Log.i(Util.myTag, "puttin in teh point")
             polylineOptions.add(binder.getMostRecentLatLng())
             map?.clear()
             map?.addPolyline(polylineOptions)
 
             distance_view.setText("" + binder.getDistance())
-
             ticksInSplit += 1
             timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
             distanceInSplit = binder.getDistance() - distanceLastSplit
 
-
-            //Log.i(Util.myTag, "MADE IT HERE, ${total_time.getTimeInSeconds()}")
 
             if (!isPaceSet) {
 
@@ -204,15 +210,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                             "\ntimeLastSplit=$timeLastSplit\ncurrentTime=${total_time.getTimeInSeconds()}")
                      */
 
-                    splits.add(
-                        Split(
-                            distanceInSplit,
-                            ticksInSplit,
-                            timeLastSplit,
-                            total_time.getTimeInSeconds(),
-                            true
-                        )
-                    )
+                    splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), true))
                     pace_split_view.setText("" + distanceInSplit / timeInSplit)
 
                     timeLastSplit = total_time.getTimeInSeconds()
@@ -227,20 +225,35 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                     pace_treadmill_view.setText("" + avgPace)
                     pace_current_view.setText("STARTING A NEW SPLIT")
 
+                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    val constraintSet = ConstraintSet()
+                    constraintSet.load(this@RunFragment.context, R.layout.run_layout_phase_3)
+                    constraintSet.applyTo(constraintLayout)
+                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    constraintSet.applyTo(constraintLayout)
+
+
                     //TODO: change UI to design in OneNote
                 } else if (splits.size == 1) {
                     pace_current_view.setText("STARTING A NEW SPLIT")
 
-                } else {
-                    if (timeInSplit != 0) {
-                        pace_current_view.setText("" + distanceInSplit / timeInSplit)
-                    }
+
+                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    val constraintSet = ConstraintSet()
+                    constraintSet.load(this@RunFragment.context, R.layout.run_layout_phase_2)
+                    constraintSet.applyTo(constraintLayout)
+                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    constraintSet.applyTo(constraintLayout)
 
                 }
-            } else {
+
+                if (timeInSplit != 0) {
+                    pace_current_view.setText("" + distanceInSplit / timeInSplit)
+                }
+
+            }
+            else {
                 if (timeInSplit >= 30) {
-
-
                     splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
 
                     val pace_difference = kotlin.math.abs(splits.last().getPace() - averagePace())
@@ -254,15 +267,24 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                     pace_split_view.setText("" + distanceInSplit / timeInSplit)
                     pace_current_view.setText("STARTING A NEW SPLIT")
 
-
-
                     timeLastSplit = total_time.getTimeInSeconds()
                     distanceLastSplit = binder.getDistance()
                     timeInSplit = 0
                     ticksInSplit = 0
-                } else if (timeInSplit != 0) {
+
+                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    val constraintSet = ConstraintSet()
+                    constraintSet.load(this@RunFragment.context, R.layout.run_layout_phase_4)
+                    constraintSet.applyTo(constraintLayout)
+                    TransitionManager.beginDelayedTransition(constraintLayout)
+                    constraintSet.applyTo(constraintLayout)
+
+                }
+                else if (timeInSplit != 0) {
                     pace_current_view.setText("" + distanceInSplit / timeInSplit)
                 }
+
+
 
 
             }
