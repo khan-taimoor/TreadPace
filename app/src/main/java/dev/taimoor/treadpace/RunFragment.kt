@@ -39,15 +39,15 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var polylineOptions = PolylineOptions().color(Color.RED)
     private lateinit var binder: RunLocationService.RunServiceBinder
     private val connection = Connection()
-    private var isPaceSet: Boolean = false
 
-    val splits = mutableListOf<Split>()
+    private var isPaceSet: Boolean = false
     private var timeInSplit = 0
     private var timeLastSplit = 0
     private var ticksInSplit = 0
     private var distanceInSplit = 0
     private var distanceLastSplit = 0
     private var timesOnTreadmill = 2
+    private val splits = mutableListOf<Split>()
 
 
 
@@ -125,17 +125,10 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 this.activity?.bindService(intent, connection, Context.BIND_IMPORTANT)
             }
 
-            TransitionManager.beginDelayedTransition(constraintLayout)
-            val constraintSet = ConstraintSet()
-            constraintSet.load(this.context, R.layout.run_layout_phase_1)
-            constraintSet.applyTo(constraintLayout)
-            TransitionManager.beginDelayedTransition(constraintLayout)
-            constraintSet.applyTo(constraintLayout)
-
+            loadLayout(R.layout.run_layout_phase_1)
 
             total_time.base = SystemClock.elapsedRealtime()
             total_time?.start()
-
 
             total_time?.setOnChronometerTickListener {
                 val time = SystemClock.elapsedRealtime() - it.base
@@ -180,8 +173,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             binder = service as RunLocationService.RunServiceBinder
             pointsObserver = PointsObserver()
             binder.addObserver(pointsObserver)
-
-
         }
 
         override fun onServiceDisconnected(className: ComponentName) {
@@ -190,103 +181,16 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     }
 
     inner class PointsObserver : Observer {
-        override fun update(observable: Observable?, p1: Any?) {
-            Log.i(Util.myTag, "puttin in teh point")
-            polylineOptions.add(binder.getMostRecentLatLng())
-            map?.clear()
-            map?.addPolyline(polylineOptions)
-
-            distance_view.setText("" + binder.getDistance())
-            ticksInSplit += 1
-            timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
-            distanceInSplit = binder.getDistance() - distanceLastSplit
-
+        override fun update(observable: Observable?, p1: Any?)
+        {
+            addNewPoint()
+            tick()
 
             if (!isPaceSet) {
-
-                if (timeInSplit >= 30) {
-                    /*
-                    Log.i(Util.myTag, "Adding run:\ndistance=$distanceInSplit\nticks=$ticksInSplit" +
-                            "\ntimeLastSplit=$timeLastSplit\ncurrentTime=${total_time.getTimeInSeconds()}")
-                     */
-
-                    splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), true))
-                    pace_split_view.setText("" + distanceInSplit / timeInSplit)
-
-                    timeLastSplit = total_time.getTimeInSeconds()
-                    distanceLastSplit = binder.getDistance()
-                    timeInSplit = 0
-                    ticksInSplit = 0
-                }
-
-                if (splits.size == 2) {
-                    isPaceSet = true
-                    val avgPace = splits[0].getPace() + splits[1].getPace()
-                    pace_treadmill_view.setText("" + avgPace)
-                    pace_current_view.setText("STARTING A NEW SPLIT")
-
-                    TransitionManager.beginDelayedTransition(constraintLayout)
-                    val constraintSet = ConstraintSet()
-                    constraintSet.load(this@RunFragment.context, R.layout.run_layout_phase_3)
-                    constraintSet.applyTo(constraintLayout)
-                    TransitionManager.beginDelayedTransition(constraintLayout)
-                    constraintSet.applyTo(constraintLayout)
-
-
-                    //TODO: change UI to design in OneNote
-                } else if (splits.size == 1) {
-                    pace_current_view.setText("STARTING A NEW SPLIT")
-
-
-                    TransitionManager.beginDelayedTransition(constraintLayout)
-                    val constraintSet = ConstraintSet()
-                    constraintSet.load(this@RunFragment.context, R.layout.run_layout_phase_2)
-                    constraintSet.applyTo(constraintLayout)
-                    TransitionManager.beginDelayedTransition(constraintLayout)
-                    constraintSet.applyTo(constraintLayout)
-
-                }
-
-                if (timeInSplit != 0) {
-                    pace_current_view.setText("" + distanceInSplit / timeInSplit)
-                }
-
+                paceIsntSet()
             }
             else {
-                if (timeInSplit >= 30) {
-                    splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
-
-                    val pace_difference = kotlin.math.abs(splits.last().getPace() - averagePace())
-                    if(pace_difference < .5){
-                        splits.last().onTreadmill = true
-                        timesOnTreadmill +=1
-                    }
-
-
-                    time_treadmill.setText("$timesOnTreadmill/${splits.size}")
-                    pace_split_view.setText("" + distanceInSplit / timeInSplit)
-                    pace_current_view.setText("STARTING A NEW SPLIT")
-
-                    timeLastSplit = total_time.getTimeInSeconds()
-                    distanceLastSplit = binder.getDistance()
-                    timeInSplit = 0
-                    ticksInSplit = 0
-
-                    TransitionManager.beginDelayedTransition(constraintLayout)
-                    val constraintSet = ConstraintSet()
-                    constraintSet.load(this@RunFragment.context, R.layout.run_layout_phase_4)
-                    constraintSet.applyTo(constraintLayout)
-                    TransitionManager.beginDelayedTransition(constraintLayout)
-                    constraintSet.applyTo(constraintLayout)
-
-                }
-                else if (timeInSplit != 0) {
-                    pace_current_view.setText("" + distanceInSplit / timeInSplit)
-                }
-
-
-
-
+                paceIsSet()
             }
         }
     }
@@ -306,12 +210,88 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
-    data class Split(val distance: Int, val numTicks: Int, val startTime: Int, val endTime: Int, var onTreadmill: Boolean){
-        fun getPace(): Double{
-            return (distance*1.0)/(endTime-startTime)
+    private fun loadLayout(resourceId: Int){
+        TransitionManager.beginDelayedTransition(constraintLayout)
+        val constraintSet = ConstraintSet()
+        constraintSet.load(this@RunFragment.context, resourceId)
+        constraintSet.applyTo(constraintLayout)
+        TransitionManager.beginDelayedTransition(constraintLayout)
+        constraintSet.applyTo(constraintLayout)
+    }
+
+    private fun resetTicks(){
+        timeLastSplit = total_time.getTimeInSeconds()
+        distanceLastSplit = binder.getDistance()
+        timeInSplit = 0
+        ticksInSplit = 0
+    }
+
+    private fun tick(){
+        distance_view.setText("" + binder.getDistance())
+        ticksInSplit += 1
+        timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
+        distanceInSplit = binder.getDistance() - distanceLastSplit
+
+    }
+
+    private fun addNewPoint(){
+        polylineOptions.add(binder.getMostRecentLatLng())
+        map?.clear()
+        map?.addPolyline(polylineOptions)
+    }
+
+    private fun paceDeltaTest(){
+        val pace_difference = kotlin.math.abs(splits.last().getPace() - averagePace())
+        if(pace_difference < .5){
+            splits.last().onTreadmill = true
+            timesOnTreadmill +=1
+        }
+    }
+
+    private fun paceIsntSet(){
+        if (timeInSplit >= 30) {
+            splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), true))
+            pace_split_view.setText("" + distanceInSplit / timeInSplit)
+            resetTicks()
+
         }
 
+        if (splits.size == 2) {
+            isPaceSet = true
+            val avgPace = splits[0].getPace() + splits[1].getPace()
+            pace_treadmill_view.setText("" + avgPace)
+            pace_current_view.setText("STARTING A NEW SPLIT")
 
+            loadLayout(R.layout.run_layout_phase_3)
+
+        }
+        else if (splits.size == 1) {
+            pace_current_view.setText("STARTING A NEW SPLIT")
+            loadLayout(R.layout.run_layout_phase_2)
+
+        }
+
+        if (timeInSplit != 0) {
+            pace_current_view.setText("" + distanceInSplit / timeInSplit)
+        }
+    }
+
+    private fun paceIsSet(){
+        if (timeInSplit >= 30) {
+            splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
+            paceDeltaTest()
+
+            time_treadmill.setText("$timesOnTreadmill/${splits.size}")
+            pace_split_view.setText("" + distanceInSplit / timeInSplit)
+            pace_current_view.setText("STARTING A NEW SPLIT")
+
+            resetTicks()
+            loadLayout(R.layout.run_layout_phase_4)
+
+        }
+        else if (timeInSplit != 0) {
+            pace_current_view.setText("" + distanceInSplit / timeInSplit)
+        }
     }
 
 }
