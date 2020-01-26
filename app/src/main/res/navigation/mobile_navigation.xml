@@ -32,8 +32,6 @@
                 app:argType="com.google.android.gms.location.LocationRequest"
                 app:nullable="true"
                 android:defaultValue="@null" />
-
-
         </action>
 
     </fragment>
@@ -65,6 +63,20 @@
         <action
             android:id="@+id/action_runFragment_to_postRunFragment"
             app:destination="@id/postRunFragment">
+
+            <argument
+                android:name="bounds"
+                app:argType="com.google.android.gms.maps.model.LatLngBounds"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+
+            <argument
+                android:name="points"
+                app:argType="com.google.android.gms.maps.model.LatLng[]"
+                app:nullable="true"
+                android:defaultValue="@null" />
+
+
         </action>
 
     </fragment>
@@ -74,7 +86,22 @@
         android:name="dev.taimoor.treadpace.PostRunFragment"
         android:label="PostRunFragment"
         tools:layout="@layout/post_run">
+        <argument
+            android:name="bounds"
+            app:argType="com.google.android.gms.maps.model.LatLngBounds"
+            app:nullable="true"
+            android:defaultValue="@null"/>
 
+        <argument
+            android:name="points"
+            app:argType="com.google.android.gms.maps.model.LatLng[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
     </fragment>
+
+
+
+
+
 
 </navigation>

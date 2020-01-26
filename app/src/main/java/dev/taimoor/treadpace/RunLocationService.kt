@@ -19,6 +19,7 @@ import androidx.lifecycle.MutableLiveData
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.tasks.Task
 import java.io.FileDescriptor
 import java.util.*
@@ -52,12 +53,6 @@ class RunLocationService: Service() {
         Log.i(Util.myTag, "From Ending")
         thread.quitSafely()
         stopSelf()
-
-
-        val currentName: MutableLiveData<List<LatLng>> by lazy {
-            MutableLiveData<List<LatLng>>()
-        }
-
 
     }
 
@@ -139,16 +134,34 @@ class RunLocationService: Service() {
         fun getDistance(): Int{
             return this@RunLocationService.points.distance
         }
+
+        fun getLatLngBounds(): LatLngBounds{
+            return this@RunLocationService.points.latLngBounds.build()
+        }
+
+        fun getPoints(): Array<LatLng?>{
+
+            val array = Array<LatLng?>(this@RunLocationService.points.points.size) {null}
+
+            this@RunLocationService.points.points.forEachIndexed { index, latLng ->
+                array[index] = latLng
+            }
+
+            return array
+        }
     }
+
 
     inner class ObservablePoints : Observable(){
         val points = mutableListOf<LatLng>()
+        val latLngBounds = LatLngBounds.Builder()
         lateinit var loneObserver : Observer
         var observerSet = false
         var distance = 0
 
         fun addPoint(point: LatLng){
             points.add(point)
+            latLngBounds.include(point)
 
             if(points.size>=2){
                 // TODO: Create extension function
