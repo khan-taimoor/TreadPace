@@ -54,9 +54,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var phase : Phase = Phase.BEFORE_RUN
 
 
-
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -77,8 +74,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity?.applicationContext as Context)
-
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -150,14 +145,17 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 val s = ((time - h * 3600000 - m * 60000)).toInt() / 1000
             }
 
-            val numba = 10
-            polylineOptions = PolylineOptions().color(Color.RED).width(numba.toFloat())
+            polylineOptions = PolylineOptions().color(Color.RED).width(10f)
             this.map?.addPolyline(polylineOptions)
         }
 
 
         end_run_button.setOnClickListener {
-            val action = RunFragmentDirections.actionRunFragmentToPostRunFragment().setBounds(binder.getLatLngBounds()).setPoints(binder.getPoints())
+            val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
+                .setBounds(binder.getLatLngBounds())
+                .setPoints(binder.getPoints())
+                .setSplits(arrayOfSplits())
+                .setRunInfo(RunInfo(averagePace(), total_time.getTimeInSeconds(), binder.getDistance(),timesOnTreadmill, splits.size, binder.getLatLngBounds()))
                 //.setPostRunPackage(PostRunPackage(binder.getPoints(), binder.getLatLngBounds()))
             binder.removeObserver()
 
@@ -197,15 +195,15 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         {
             addNewPoint()
             tick()
-            Log.i(Util.myTag, "isPaceSet:$isPaceSet\n" +
-                    "timeInSplit:$timeInSplit\n" +
-                    "timeLastSplit:$timeLastSplit\n" +
-                    "ticksInSplit:$ticksInSplit\n" +
-                    "distanceInSplit:$distanceInSplit\n" +
-                    "distanceLastSplit:$distanceLastSplit\n" +
-                    "timesOnTreadmill:$timesOnTreadmill\n" +
-                    "splits:$splits\n" +
-                    "phase:$phase")
+//            Log.i(Util.myTag, "isPaceSet:$isPaceSet\n" +
+//                    "timeInSplit:$timeInSplit\n" +
+//                    "timeLastSplit:$timeLastSplit\n" +
+//                    "ticksInSplit:$ticksInSplit\n" +
+//                    "distanceInSplit:$distanceInSplit\n" +
+//                    "distanceLastSplit:$distanceLastSplit\n" +
+//                    "timesOnTreadmill:$timesOnTreadmill\n" +
+//                    "splits:$splits\n" +
+//                    "phase:$phase")
 
             if (!isPaceSet) {
                 paceIsntSet()
@@ -327,8 +325,16 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         BEFORE_RUN, PHASE_ONE, PHASE_TWO, PHASE_THREE, PHASE_FOUR
     }
 
-    @Parcelize
-    data class PostRunPackage(val list: List<LatLng>, val bounds: LatLngBounds): Parcelable
+
+    private fun arrayOfSplits(): Array<Split?>{
+        val array = Array<Split?>(this@RunFragment.splits.size) {null}
+
+        this.splits.forEachIndexed { index, split ->
+            array[index] = split
+        }
+
+        return array
+    }
 
 
 }
