@@ -1,5 +1,6 @@
 package dev.taimoor.treadpace
 
+import android.app.AlertDialog
 import android.content.*
 import android.graphics.Color
 import android.location.Location
@@ -18,7 +19,11 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
 import android.os.SystemClock
 import android.transition.TransitionManager
+import android.view.MenuItem
 import android.widget.Chronometer
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.OnBackPressedDispatcherOwner
+import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
@@ -54,6 +59,19 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private var phase : Phase = Phase.BEFORE_RUN
 
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity?.applicationContext as Context)
+
+        Log.i(Util.myTag, "At run fragment ${this.activity?.supportFragmentManager?.backStackEntryCount}")
+
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
+
+            backButton((1 shl 0) or (1 shl 1) or (1 shl 2))
+            Log.i(Util.myTag, "back pressed")
+        }
+        callback.isEnabled = true
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -67,14 +85,13 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         interval = safeArgs.interval
         priority = safeArgs.priority
         locationRequest = safeArgs.locationRequest
+        phase = Phase.BEFORE_RUN
+        Log.i(Util.myTag, "in on create view")
 
         return inflater.inflate(R.layout.run_layout, container, false)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity?.applicationContext as Context)
-    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -88,6 +105,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         }
 
         Log.i(Util.myTag, "View Created")
+
 
     }
 
@@ -147,6 +165,11 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
             polylineOptions = PolylineOptions().color(Color.RED).width(10f)
             this.map?.addPolyline(polylineOptions)
+
+            val actionBar = activity?.actionBar
+            actionBar?.setHomeButtonEnabled(false) // disable the button
+            actionBar?.setDisplayHomeAsUpEnabled(false) // remove the left caret
+            actionBar?.setDisplayShowHomeEnabled(false) // remove the icon
         }
 
 
@@ -336,5 +359,72 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         return array
     }
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            backButton((1 shl 0) or (1 shl 1))
+        }
+        return true
+    }
 
+
+
+    // if before run, end
+    // if in phase 4, offer to go to next run fragment or to exit early. STOP SERVICE ALSO
+    // if before phase 4, offer to quit run early. STOP SERVICE EARLY
+    private fun backButton(flags: Int){
+
+        val builder: AlertDialog.Builder? = this.activity?.let {
+            AlertDialog.Builder(it)
+        }
+        if(this.phase == Phase.BEFORE_RUN){
+            findNavController().navigate(R.id.homeFragment)
+            Log.i(Util.myTag, "LEAVE THIS SCREEN")
+
+        }
+
+        if(this.phase > Phase.BEFORE_RUN){
+            if(flags and (1 shl 0) == (1 shl 0)){
+                builder?.setNeutralButton("Return"){ dialog, id ->
+                    Log.i(Util.myTag, "resuming run")
+                }
+            }
+            if(flags and (1 shl 1) == (1 shl 1)){
+                builder?.setNegativeButton("Exit without saving"){ dialog, id ->
+                    Log.i(Util.myTag, "Exit run without saving")
+                    endService()
+                    findNavController().navigate(R.id.homeFragment)
+
+                }
+            }
+        }
+
+        if (this.phase >= Phase.PHASE_FOUR) {
+            if (flags and (1 shl 2) == (1 shl 2)) {
+                builder?.setPositiveButton("Exit and save") { dialog, id ->
+                    Log.i(Util.myTag, "Exit and save")
+                    endAndSaveRun()
+                }
+            }
+        }
+        builder?.show()
+    }
+
+    private fun endAndSaveRun(){
+        val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
+            .setBounds(binder.getLatLngBounds())
+            .setPoints(binder.getPoints())
+            .setSplits(arrayOfSplits())
+            .setRunInfo(RunInfo(averagePace(), total_time.getTimeInSeconds(), binder.getDistance(),timesOnTreadmill, splits.size, binder.getLatLngBounds()))
+        endService()
+
+        findNavController().navigate(action)
+    }
+
+    private fun endService(){
+        binder.removeObserver()
+        val endServiceIntent = Intent(this.context, RunLocationService::class.java)
+        this.activity?.applicationContext?.stopService(endServiceIntent)
+        total_time?.stop()
+
+    }
 }

@@ -33,6 +33,7 @@ class HomeFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
 
+        Log.i(Util.myTag, "At home fragment ${this.activity?.supportFragmentManager?.backStackEntryCount}")
         return inflater.inflate(R.layout.home_layout, container, false)
 
     }
