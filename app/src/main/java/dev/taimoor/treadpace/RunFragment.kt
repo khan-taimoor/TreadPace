@@ -165,28 +165,11 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
             polylineOptions = PolylineOptions().color(Color.RED).width(10f)
             this.map?.addPolyline(polylineOptions)
-
-            val actionBar = activity?.actionBar
-            actionBar?.setHomeButtonEnabled(false) // disable the button
-            actionBar?.setDisplayHomeAsUpEnabled(false) // remove the left caret
-            actionBar?.setDisplayShowHomeEnabled(false) // remove the icon
         }
 
 
         end_run_button.setOnClickListener {
-            val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
-                .setBounds(binder.getLatLngBounds())
-                .setPoints(binder.getPoints())
-                .setSplits(arrayOfSplits())
-                .setRunInfo(RunInfo(averagePace(), total_time.getTimeInSeconds(), binder.getDistance(),timesOnTreadmill, splits.size, binder.getLatLngBounds()))
-                //.setPostRunPackage(PostRunPackage(binder.getPoints(), binder.getLatLngBounds()))
-            binder.removeObserver()
-
-            val endServiceIntent = Intent(this.context, RunLocationService::class.java)
-            this.activity?.applicationContext?.stopService(endServiceIntent)
-            //this.activity?.applicationContext?.unbindService(connection)
-            total_time?.stop()
-            findNavController().navigate(action)
+            backButton((1 shl 2))
         }
 
 
@@ -376,23 +359,34 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         val builder: AlertDialog.Builder? = this.activity?.let {
             AlertDialog.Builder(it)
         }
-        if(this.phase == Phase.BEFORE_RUN){
-            findNavController().navigate(R.id.homeFragment)
-            Log.i(Util.myTag, "LEAVE THIS SCREEN")
 
+        if(this.phase == Phase.BEFORE_RUN){
+
+            builder?.setTitle("Return to home page")
+
+            builder?.setNegativeButton("Stay"){ dialog, id ->
+                Log.i(Util.myTag, "Exit run without saving")
+            }
+
+            builder?.setPositiveButton("Return") { dialog, id ->
+                Log.i(Util.myTag, "Return to run screen")
+                findNavController().navigate(RunFragmentDirections.actionRunFragmentToHomeRunFragment())
+            }
         }
 
         if(this.phase > Phase.BEFORE_RUN){
+
+            builder?.setTitle("Change run state?")
             if(flags and (1 shl 0) == (1 shl 0)){
                 builder?.setNeutralButton("Return"){ dialog, id ->
                     Log.i(Util.myTag, "resuming run")
                 }
             }
             if(flags and (1 shl 1) == (1 shl 1)){
-                builder?.setNegativeButton("Exit without saving"){ dialog, id ->
+                builder?.setNegativeButton("Exit w/o saving"){ dialog, id ->
                     Log.i(Util.myTag, "Exit run without saving")
                     endService()
-                    findNavController().navigate(R.id.homeFragment)
+                    findNavController().navigate(RunFragmentDirections.actionRunFragmentToHomeRunFragment())
 
                 }
             }
@@ -400,7 +394,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
         if (this.phase >= Phase.PHASE_FOUR) {
             if (flags and (1 shl 2) == (1 shl 2)) {
-                builder?.setPositiveButton("Exit and save") { dialog, id ->
+                builder?.setPositiveButton("Save") { dialog, id ->
                     Log.i(Util.myTag, "Exit and save")
                     endAndSaveRun()
                 }

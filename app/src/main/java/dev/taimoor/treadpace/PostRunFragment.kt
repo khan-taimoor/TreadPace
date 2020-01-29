@@ -57,6 +57,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         val runInfo = safeArgs.runInfo
 
 
+
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
         polylineOptions.addAll(points?.toMutableList())
         this.map?.addPolyline(polylineOptions)
@@ -77,6 +78,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         /**create the camera with bounds and padding to set into map */
         val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, padding)
 
+
+        loadLayout(R.layout.post_run_phase_2)
         this.map?.animateCamera(cu)
 
 
@@ -99,7 +102,6 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         }
 
-        loadLayout(R.layout.post_run_phase_2)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

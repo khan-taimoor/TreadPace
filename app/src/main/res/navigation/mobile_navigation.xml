@@ -61,6 +61,12 @@
             android:defaultValue="@null" />
 
         <action
+            android:id="@+id/action_runFragment_toHomeRunFragment"
+            app:popUpTo="@id/homeFragment">
+
+        </action>
+
+        <action
             android:id="@+id/action_runFragment_to_postRunFragment"
             app:destination="@id/postRunFragment">
 
