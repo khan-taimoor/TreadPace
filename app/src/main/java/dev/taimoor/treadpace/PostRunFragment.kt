@@ -2,12 +2,14 @@ package dev.taimoor.treadpace
 
 
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
@@ -20,8 +22,15 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import kotlinx.android.synthetic.main.post_run.*
+import kotlinx.android.synthetic.main.post_run.distance_view
+import kotlinx.android.synthetic.main.post_run.pace_treadmill_view
+import kotlinx.android.synthetic.main.post_run.sparkView
+import kotlinx.android.synthetic.main.post_run.time_treadmill
+import kotlinx.android.synthetic.main.post_run.total_time
+import kotlinx.android.synthetic.main.post_run_phase_2.*
 import kotlinx.android.synthetic.main.run_layout.constraintLayout
 import kotlinx.android.synthetic.main.run_layout.map_view
+import org.w3c.dom.Text
 
 
 class PostRunFragment : Fragment(), OnMapReadyCallback {
@@ -30,7 +39,10 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     private var map: GoogleMap? = null
     private var mapView: MapView? = null
     private lateinit var polylineOptions : PolylineOptions
-
+    private var points : Array<LatLng>? = null
+    private var splits : Array<Split>? = null
+    private var runInfo: RunInfo? = null
+    private val polylines = mutableListOf<PolylineOptions>()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -52,14 +64,16 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         val safeArgs: PostRunFragmentArgs by navArgs()
 
-        val points = safeArgs.points
-        val splits = safeArgs.splits
-        val runInfo = safeArgs.runInfo
+
+        this.points = safeArgs.points
+        this.splits = safeArgs.splits
+        this.runInfo = safeArgs.runInfo
+
 
 
 
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
-        polylineOptions.addAll(points?.toMutableList())
+        polylineOptions.addAll(points?.toList())
         this.map?.addPolyline(polylineOptions)
 
 
@@ -75,20 +89,24 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         /**create the bounds from latlngBuilder to set into map camera*/
         /**create the bounds from latlngBuilder to set into map camera */
         /**create the camera with bounds and padding to set into map*/
-        /**create the camera with bounds and padding to set into map */
+        /**create the camera with bounds and padding to set into map
+         *
+         */
         val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, padding)
 
-
-        loadLayout(R.layout.post_run_phase_2)
+        val speed = this.activity?.findViewById<TextView>(R.id.speedy2)
         this.map?.animateCamera(cu)
 
+        loadLayout(R.layout.post_run_phase_2)
 
 
-        if(splits != null){
 
-            val floatArray = Array<Float>(splits.size) {0f}
 
-            splits.forEachIndexed { index, split ->
+        if(splits?.size != null){
+
+            val splitSize = splits?.size
+            val floatArray = Array<Float>(splitSize as Int) {0f}
+            splits?.forEachIndexed { index, split ->
                 floatArray[index] = split.getPaceFloat()
             }
             sparkView.adapter = MyAdapter(floatArray, runInfo?.treadmillPace?.toFloat() as Float)
@@ -96,10 +114,25 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             sparkView.isScrubEnabled = true
             sparkView.scrubListener = SparkView.OnScrubListener {
                 if(it!= null) {
-                    Log.i(Util.myTag, it.toString())
+                    val index = it as Int
+                    val pace = splits?.get(index)?.getPace()
+                    pace?.let {
+                        Log.i(Util.myTag, "$index $pace")
+                        speed?.setText("$index $pace")
+
+
+                    }
+
+
+
                 }
             }
 
+
+
+            sparkView.setBackgroundResource(R.drawable.border)
+            //sparkView.setBackgroundColor(Color.RED)
+            //sparkView.setBackgr
         }
 
     }
@@ -133,8 +166,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             return yData.size
         }
 
-        override fun getItem(index: Int): Any {
-            return yData[index]
+        override fun getItem(index: Int): Int {
+            return index
         }
 
         override fun getY(index: Int): Float {
@@ -151,6 +184,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
     }
+
 
 
 }

@@ -32,39 +32,42 @@
         android:id="@+id/pace_treadmill_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Pace"
+        app:layout_constraintBottom_toBottomOf="@+id/pace_split_view"
         app:layout_constraintEnd_toStartOf="@id/border_vertical"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal" />
+        app:layout_constraintTop_toTopOf="@+id/border_horizontal_2"
+        tools:text="Pace" />
 
     <TextView
         android:id="@+id/pace_split_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="4dp"
-        tools:text="Split View"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal"
         app:layout_constraintEnd_toStartOf="@id/pace_separator_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
+        tools:text="Split View" />
 
     <TextView
         android:id="@+id/pace_current_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="4dp"
-        tools:text="Split View"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal"
         app:layout_constraintStart_toEndOf="@id/pace_separator_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
+        tools:text="Split View" />
 
     <TextView
         android:id="@+id/time_treadmill"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/border_vertical"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/pace_separator_horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/border_horizontal_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Time on Treadmill"
-        android:visibility="visible"/>
+        app:layout_constraintStart_toStartOf="@id/border_vertical"
+        app:layout_constraintTop_toTopOf="@+id/border_horizontal_2"
+        tools:text="Time on Treadmill" />
 
     <TextView
         android:id="@+id/total_time"
@@ -92,14 +95,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75"/>
+        app:layout_constraintGuide_percent="0.4" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/border_horizontal_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.875"/>
+        app:layout_constraintGuide_percent="0.5" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/border_vertical"
@@ -113,7 +116,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.935" />
+        app:layout_constraintGuide_percent="0.6" />
 
     <androidx.constraintlayout.widget.Guideline
         android:id="@+id/pace_separator_vertical"
@@ -126,23 +129,27 @@
         android:id="@+id/sparkView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:visibility="gone"
+        android:layout_marginStart="32dp"
+        android:layout_marginBottom="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginTop="32dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal"
+        app:layout_constraintWidth_default="wrap"
+        android:backgroundTint="@color/spark_line_color"/>
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="SPEED"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/sparkView"
+        app:layout_constraintStart_toStartOf="@id/sparkView"
         android:id="@+id/speedy2"
         android:visibility="visible">
     </TextView>
-
-
-
 
 
 
