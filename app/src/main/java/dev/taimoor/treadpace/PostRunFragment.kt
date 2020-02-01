@@ -18,6 +18,8 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
@@ -42,8 +44,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     private var points : Array<LatLng>? = null
     private var splits : Array<Split>? = null
     private var runInfo: RunInfo? = null
-    private val polylines = mutableListOf<PolylineOptions>()
+    private var polyline: Polyline? = null
 
+    private var currentIndexSplit : Int? = null
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -85,22 +88,12 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         //val postRunPackage = safeArgs.postRunPackage
 
-        val padding = 50
-        /**create the bounds from latlngBuilder to set into map camera*/
-        /**create the bounds from latlngBuilder to set into map camera */
-        /**create the camera with bounds and padding to set into map*/
-        /**create the camera with bounds and padding to set into map
-         *
-         */
-        val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, padding)
-
-        val speed = this.activity?.findViewById<TextView>(R.id.speedy2)
-        this.map?.animateCamera(cu)
-
         loadLayout(R.layout.post_run_phase_2)
 
+        val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, 50)
+        this.map?.animateCamera(cu)
 
-
+        val speed = this.activity?.findViewById<TextView>(R.id.speedy2)
 
         if(splits?.size != null){
 
@@ -135,6 +128,17 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun splitToCreateForPolyline(index: Int){
+
+        if (currentIndexSplit != null && currentIndexSplit == index){
+            return
+        }
+
+
+
+        if(polyline != null){
+            polyline?.remove()
+        }
+
         var pointsStart = 0
 
         val splits = this?.splits
@@ -147,16 +151,31 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         var pointsEnd = pointsStart + (splits?.get(index)?.numTicks as Int)
 
 
+        if(pointsEnd - pointsStart == 0){
+            return
+        }
 
-        val copyOfRange = this.points?.copyOfRange(pointsStart, pointsEnd)?.toList()
+        currentIndexSplit = index
+
+        val boundsBuilder = LatLngBounds.builder()
+
+        val pointsList = mutableListOf<LatLng>()
+        for (point in pointsStart until pointsEnd){
+            pointsList.add(this.points?.get(point) as LatLng)
+            boundsBuilder.include(this.points?.get(point))
+        }
 
         Log.i(Util.myTag, "index:$index start:$pointsStart end:$pointsEnd")
 
         val polylineOptions = PolylineOptions().color(Color.YELLOW).width(20f).zIndex(1f)
 
-        polylineOptions.addAll(copyOfRange)
-        polylines.add(polylineOptions)
-        this.map?.addPolyline(polylineOptions)
+
+        polylineOptions.addAll(pointsList)
+        polyline = this.map?.addPolyline(polylineOptions)
+        val cu = CameraUpdateFactory.newLatLngBounds(boundsBuilder.build(), 100)
+        this.map?.animateCamera(cu)
+
+
     }
 
 
