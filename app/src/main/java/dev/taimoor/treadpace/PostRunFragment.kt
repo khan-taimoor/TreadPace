@@ -116,8 +116,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
                 if(it!= null) {
                     val index = it as Int
                     val pace = splits?.get(index)?.getPace()
+                    splitToCreateForPolyline(index)
                     pace?.let {
-                        Log.i(Util.myTag, "$index $pace")
+                        //Log.i(Util.myTag, "$index $pace")
                         speed?.setText("$index $pace")
 
 
@@ -127,15 +128,37 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
                 }
             }
-
-
-
             sparkView.setBackgroundResource(R.drawable.border)
-            //sparkView.setBackgroundColor(Color.RED)
-            //sparkView.setBackgr
+
         }
 
     }
+
+    private fun splitToCreateForPolyline(index: Int){
+        var pointsStart = 0
+
+        val splits = this?.splits
+        val points = this?.points
+
+        for (x in 0 until index){
+            pointsStart += (splits?.get(x)?.numTicks as Int)
+        }
+
+        var pointsEnd = pointsStart + (splits?.get(index)?.numTicks as Int)
+
+
+
+        val copyOfRange = this.points?.copyOfRange(pointsStart, pointsEnd)?.toList()
+
+        Log.i(Util.myTag, "index:$index start:$pointsStart end:$pointsEnd")
+
+        val polylineOptions = PolylineOptions().color(Color.YELLOW).width(20f).zIndex(1f)
+
+        polylineOptions.addAll(copyOfRange)
+        polylines.add(polylineOptions)
+        this.map?.addPolyline(polylineOptions)
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

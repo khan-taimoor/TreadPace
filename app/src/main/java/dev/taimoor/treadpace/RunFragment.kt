@@ -211,6 +211,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 //                    "splits:$splits\n" +
 //                    "phase:$phase")
 
+
+            Log.i(Util.myTag, "ticks in split: $ticksInSplit")
+
             if (!isPaceSet) {
                 paceIsntSet()
             }
@@ -228,7 +231,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
     fun averagePace(): Double{
         if(splits.size >= 2){
-            return splits[0].getPace() + splits[1].getPace()/2
+            return (splits[0].getPace() + splits[1].getPace()) /2
         }
         else{
             return -1.0
@@ -283,7 +286,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
         if (splits.size == 2) {
             isPaceSet = true
-            val avgPace = splits[0].getPace() + splits[1].getPace()
+            val avgPace = averagePace()
 
             pace_treadmill_view.setText("" + "%.2f".format(avgPace))
             pace_current_view.setText("STARTING A NEW SPLIT")
@@ -404,17 +407,25 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun endAndSaveRun(){
+
+
+        splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
+
         val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
             .setBounds(binder.getLatLngBounds())
             .setPoints(binder.getPoints())
             .setSplits(arrayOfSplits())
             .setRunInfo(RunInfo(averagePace(), total_time.getTimeInSeconds(), binder.getDistance(),timesOnTreadmill, splits.size, binder.getLatLngBounds()))
+
+
         endService()
+
 
         findNavController().navigate(action)
     }
 
     private fun endService(){
+
         binder.removeObserver()
         val endServiceIntent = Intent(this.context, RunLocationService::class.java)
         this.activity?.applicationContext?.stopService(endServiceIntent)
