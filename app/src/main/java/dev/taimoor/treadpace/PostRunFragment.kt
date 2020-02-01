@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -21,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import kotlinx.android.synthetic.main.post_run.*
@@ -57,6 +59,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
         return inflater.inflate(R.layout.post_run, container, false)
+
+
 
 
 
@@ -112,7 +116,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
                     splitToCreateForPolyline(index)
                     pace?.let {
                         //Log.i(Util.myTag, "$index $pace")
-                        speed?.setText("$index $pace")
+                        speed?.setText("Split: $index Pace: $pace")
 
 
                     }
@@ -122,6 +126,13 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
                 }
             }
             sparkView.setBackgroundResource(R.drawable.border)
+
+
+
+            val saveRunButton = this.activity?.findViewById<FloatingActionButton>(R.id.save_run_button)
+            saveRunButton?.setOnClickListener {
+                findNavController().navigate(PostRunFragmentDirections.actionPostRunFragmentToHomeFragment())
+            }
 
         }
 
