@@ -1,8 +1,13 @@
 package dev.taimoor.treadpace
 
 import android.app.Activity
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ClipData
+import android.content.Context
+import android.content.IntentSender
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.Menu
@@ -17,6 +22,9 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.navOptions
 import androidx.navigation.ui.*
+import com.google.android.gms.common.api.ResolvableApiException
+import com.google.android.gms.location.*
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.navigation.NavigationView
@@ -40,13 +48,9 @@ class MainActivity : AppCompatActivity() {
 
         appBarConfiguration = AppBarConfiguration(navController.graph)
 
-
-
-
-
         setupActionBar(navController, appBarConfiguration)
 
-        //setupNavigationMenu(navController)
+        createNotificationChannel()
 
         navController.addOnDestinationChangedListener { _, destination, _ ->
             val dest: String = try {
@@ -60,9 +64,27 @@ class MainActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT).show()
             Log.d("NavigationActivity", "Navigated to $dest")
         }
-
-
     }
+
+
+    // TODO: Notifications are currently being made but I should clarify notification channel and stuff
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val name = getString(R.string.channel_name)
+            val descriptionText = getString(R.string.channel_description)
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("60", name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            val notificationManager: NotificationManager =
+                this.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
     private fun setupActionBar(navController: NavController,
                                appBarConfig: AppBarConfiguration) {
        // This allows NavigationUI to decide what label to show in the action bar
@@ -112,4 +134,6 @@ class MainActivity : AppCompatActivity() {
 //    }
         // TODO END STEP 9.7
     }
+
+
 }

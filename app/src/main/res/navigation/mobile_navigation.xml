@@ -10,17 +10,128 @@
         android:id="@+id/homeFragment"
         android:name="dev.taimoor.treadpace.HomeFragment"
         android:label="HomeFragment"
-        tools:layout="@layout/home_layout"
-        >
+        tools:layout="@layout/home_layout" >
+
         <action
             android:id="@+id/action_homeFragment_to_runFragment"
-            app:destination="@id/runFragment" />
+            app:destination="@id/runFragment">
+            <argument
+                android:name="interval"
+                app:argType="integer"
+                android:defaultValue="10000" />
+            <argument
+                android:name="fastestInterval"
+                app:argType="integer"
+                android:defaultValue="5000" />
+            <argument
+                android:name="priority"
+                app:argType="integer"
+                android:defaultValue="100" />
+            <argument
+                android:name="locationRequest"
+                app:argType="com.google.android.gms.location.LocationRequest"
+                app:nullable="true"
+                android:defaultValue="@null" />
+        </action>
+
     </fragment>
 
     <fragment
         android:id="@+id/runFragment"
         android:name="dev.taimoor.treadpace.RunFragment"
         android:label="RunFragment"
-        tools:layout="@layout/run_layout"
-        />
+        tools:layout="@layout/run_layout">
+
+        <argument
+            android:name="interval"
+            app:argType="integer"
+            android:defaultValue="10000" />
+        <argument
+            android:name="fastestInterval"
+            app:argType="integer"
+            android:defaultValue="5000" />
+        <argument
+            android:name="priority"
+            app:argType="integer"
+            android:defaultValue="100" />
+        <argument
+            android:name="locationRequest"
+            app:argType="com.google.android.gms.location.LocationRequest"
+            app:nullable="true"
+            android:defaultValue="@null" />
+
+        <action
+            android:id="@+id/action_runFragment_toHomeRunFragment"
+            app:popUpTo="@id/homeFragment">
+
+        </action>
+
+        <action
+            android:id="@+id/action_runFragment_to_postRunFragment"
+            app:destination="@id/postRunFragment">
+
+            <argument
+                android:name="bounds"
+                app:argType="com.google.android.gms.maps.model.LatLngBounds"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+
+            <argument
+                android:name="points"
+                app:argType="com.google.android.gms.maps.model.LatLng[]"
+                app:nullable="true"
+                android:defaultValue="@null" />
+
+            <argument
+                android:name="splits"
+                app:argType="dev.taimoor.treadpace.Split[]"
+                app:nullable="true"
+                android:defaultValue="@null" />
+
+            <argument
+                android:name="runInfo"
+                app:argType="dev.taimoor.treadpace.RunInfo"
+                app:nullable="true"
+                android:defaultValue="@null"/>
+
+        </action>
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/postRunFragment"
+        android:name="dev.taimoor.treadpace.PostRunFragment"
+        android:label="PostRunFragment"
+        tools:layout="@layout/post_run">
+        <argument
+            android:name="bounds"
+            app:argType="com.google.android.gms.maps.model.LatLngBounds"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+
+        <argument
+            android:name="points"
+            app:argType="com.google.android.gms.maps.model.LatLng[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="splits"
+            app:argType="dev.taimoor.treadpace.Split[]"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="runInfo"
+            app:argType="dev.taimoor.treadpace.RunInfo"
+            app:nullable="true"
+            android:defaultValue="@null"/>
+        <action
+            android:id="@+id/action_postRunFragment_to_homeFragment"
+            app:popUpTo="@id/homeFragment" />
+    </fragment>
+
+
+
+
+
+
 </navigation>
