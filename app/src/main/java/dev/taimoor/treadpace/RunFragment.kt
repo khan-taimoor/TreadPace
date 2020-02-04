@@ -1,5 +1,6 @@
 package dev.taimoor.treadpace
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.*
 import android.graphics.Color
@@ -25,8 +26,17 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.PolylineOptions
+import dev.taimoor.treadpace.data.Phase
+import dev.taimoor.treadpace.data.RunViewModel
+import dev.taimoor.treadpace.data.Tick
+import dev.taimoor.treadpace.databinding.RunLayoutBinding
 import kotlinx.android.parcel.Parcelize
 import java.util.*
 
@@ -58,6 +68,10 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
     private var phase : Phase = Phase.BEFORE_RUN
 
+    private val viewModel : RunViewModel by activityViewModels()
+    lateinit var binding: RunLayoutBinding
+
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -72,6 +86,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         }
         callback.isEnabled = true
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -88,7 +103,33 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         phase = Phase.BEFORE_RUN
         Log.i(Util.myTag, "in on create view")
 
-        return inflater.inflate(R.layout.run_layout, container, false)
+
+        this.binding = DataBindingUtil.inflate(inflater, R.layout.run_layout, container, false)
+        binding.viewmodel = this.viewModel
+        binding.lifecycleOwner = this
+
+        val phase = androidx.lifecycle.Observer<Phase> {newPhase ->
+            val layout: Int by lazy {
+                when{
+                    newPhase == Phase.PHASE_ONE -> R.layout.run_layout_phase_1
+                    newPhase == Phase.PHASE_TWO -> R.layout.run_layout_phase_2
+                    newPhase == Phase.PHASE_THREE -> R.layout.run_layout_phase_3
+                    else -> R.layout.run_layout_phase_4
+                }
+            }
+
+            Log.i(Util.myTag, "should be fukin loading in $layout")
+            //loadLayout(layout)
+        }
+
+
+        viewModel.currentPhase.observe(binding.lifecycleOwner as LifecycleOwner, phase)
+
+
+
+
+
+        return binding.root
     }
 
 
@@ -144,6 +185,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
             loadLayout(R.layout.run_layout_phase_1)
             phase = Phase.PHASE_ONE
+            //viewModel.phase = Phase.PHASE_ONE
             isPaceSet = false
             timeInSplit = 0
             timeLastSplit = 0
@@ -156,12 +198,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             total_time.base = SystemClock.elapsedRealtime()
             total_time?.start()
 
-            total_time?.setOnChronometerTickListener {
-                val time = SystemClock.elapsedRealtime() - it.base
-                val h = (time / 3600000).toInt()
-                val m = ((time - h * 3600000)).toInt() / 60000
-                val s = ((time - h * 3600000 - m * 60000)).toInt() / 1000
-            }
 
             polylineOptions = PolylineOptions().color(Color.RED).width(10f)
             this.map?.addPolyline(polylineOptions)
@@ -201,15 +237,6 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         {
             addNewPoint()
             tick()
-//            Log.i(Util.myTag, "isPaceSet:$isPaceSet\n" +
-//                    "timeInSplit:$timeInSplit\n" +
-//                    "timeLastSplit:$timeLastSplit\n" +
-//                    "ticksInSplit:$ticksInSplit\n" +
-//                    "distanceInSplit:$distanceInSplit\n" +
-//                    "distanceLastSplit:$distanceLastSplit\n" +
-//                    "timesOnTreadmill:$timesOnTreadmill\n" +
-//                    "splits:$splits\n" +
-//                    "phase:$phase")
 
 
             Log.i(Util.myTag, "ticks in split: $ticksInSplit")
@@ -223,29 +250,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         }
     }
 
+
+
     fun Chronometer.getTimeInSeconds(): Int{
         val time = SystemClock.elapsedRealtime() - this.base
 
         return time.toInt()/1000
     }
 
-    fun averagePace(): Double{
-        if(splits.size >= 2){
-            return (splits[0].getPace() + splits[1].getPace()) /2
-        }
-        else{
-            return -1.0
-        }
-    }
-
-    private fun loadLayout(resourceId: Int){
-        TransitionManager.beginDelayedTransition(constraintLayout)
-        val constraintSet = ConstraintSet()
-        constraintSet.load(this@RunFragment.context, resourceId)
-        constraintSet.applyTo(constraintLayout)
-        TransitionManager.beginDelayedTransition(constraintLayout)
-        constraintSet.applyTo(constraintLayout)
-    }
 
     private fun resetTicks(){
         timeLastSplit = total_time.getTimeInSeconds()
@@ -255,10 +267,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun tick(){
-        distance_view.setText("" + binder.getDistance())
+        //distance_view.setText("" + binder.getDistance())
+        viewModel.updateDistance(binder.getDistance())
         ticksInSplit += 1
         timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
         distanceInSplit = binder.getDistance() - distanceLastSplit
+
+
+        viewModel.receiveTick(Tick(total_time.getTimeInSeconds(), binder.getDistance()))
 
     }
 
@@ -279,17 +295,16 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private fun paceIsntSet(){
         if (timeInSplit >= 30) {
             splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), true))
-            pace_split_view.setText("" + distanceInSplit / timeInSplit)
+            //pace_split_view.setText("" + distanceInSplit / timeInSplit)
             resetTicks()
-
         }
 
         if (splits.size == 2) {
             isPaceSet = true
             val avgPace = averagePace()
 
-            pace_treadmill_view.setText("" + "%.2f".format(avgPace))
-            pace_current_view.setText("STARTING A NEW SPLIT")
+            //pace_treadmill_view.setText("" + "%.2f".format(avgPace))
+            //pace_current_view.setText("STARTING A NEW SPLIT")
 
             phase = Phase.PHASE_THREE
             loadLayout(R.layout.run_layout_phase_3)
@@ -299,13 +314,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             loadLayout(R.layout.run_layout_phase_2)
             if(phase == Phase.PHASE_ONE){
                 phase = Phase.PHASE_TWO
+                //viewModel.updatePhase(Phase.PHASE_TWO)
                 loadLayout(R.layout.run_layout_phase_2)
-                pace_current_view.setText("STARTING A NEW SPLIT")
+                //pace_current_view.setText("STARTING A NEW SPLIT")
             }
         }
 
         if (timeInSplit != 0) {
-            pace_current_view.setText("" + distanceInSplit / timeInSplit)
+            //pace_current_view.setText("" + distanceInSplit / timeInSplit)
         }
     }
 
@@ -314,9 +330,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
             paceDeltaTest()
 
-            time_treadmill.setText("$timesOnTreadmill/${splits.size}")
-            pace_split_view.setText("" + distanceInSplit / timeInSplit)
-            pace_current_view.setText("STARTING A NEW SPLIT")
+            //time_treadmill.setText("$timesOnTreadmill/${splits.size}")
+            //pace_split_view.setText("" + distanceInSplit / timeInSplit)
+            //pace_current_view.setText("STARTING A NEW SPLIT")
 
             resetTicks()
 
@@ -326,13 +342,30 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
         else if (timeInSplit != 0) {
-            pace_current_view.setText("" + distanceInSplit / timeInSplit)
+            //pace_current_view.setText("" + distanceInSplit / timeInSplit)
         }
     }
 
-    enum class Phase {
-        BEFORE_RUN, PHASE_ONE, PHASE_TWO, PHASE_THREE, PHASE_FOUR
+
+    fun averagePace(): Double{
+        if(splits.size >= 2){
+            return (splits[0].getPace() + splits[1].getPace()) /2
+        }
+        else{
+            return -1.0
+        }
     }
+
+    private fun loadLayout(resourceId: Int){
+        TransitionManager.beginDelayedTransition(constraintLayout)
+        val constraintSet = ConstraintSet()
+        constraintSet.load(this@RunFragment.context, resourceId)
+        constraintSet.applyTo(constraintLayout)
+        TransitionManager.beginDelayedTransition(constraintLayout)
+        constraintSet.applyTo(constraintLayout)
+    }
+
+
 
 
     private fun arrayOfSplits(): Array<Split?>{
