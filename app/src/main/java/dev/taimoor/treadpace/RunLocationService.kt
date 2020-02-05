@@ -185,4 +185,7 @@ class RunLocationService: Service() {
             return points[points.size - 1]
         }
     }
+
+
+
 }
