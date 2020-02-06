@@ -15,25 +15,24 @@
         <action
             android:id="@+id/action_homeFragment_to_runFragment"
             app:destination="@id/runFragment"
-            app:launchSingleTop="true"
-            app:popUpTo="@id/runFragment">
+            app:launchSingleTop="true">
             <argument
                 android:name="interval"
-                app:argType="integer"
-                android:defaultValue="10000" />
+                android:defaultValue="10000"
+                app:argType="integer" />
             <argument
                 android:name="fastestInterval"
-                app:argType="integer"
-                android:defaultValue="5000" />
+                android:defaultValue="5000"
+                app:argType="integer" />
             <argument
                 android:name="priority"
-                app:argType="integer"
-                android:defaultValue="100" />
+                android:defaultValue="100"
+                app:argType="integer" />
             <argument
                 android:name="locationRequest"
+                android:defaultValue="@null"
                 app:argType="com.google.android.gms.location.LocationRequest"
-                app:nullable="true"
-                android:defaultValue="@null"/>
+                app:nullable="true" />
         </action>
 
     </fragment>
@@ -75,27 +74,27 @@
 
             <argument
                 android:name="bounds"
+                android:defaultValue="@null"
                 app:argType="com.google.android.gms.maps.model.LatLngBounds"
-                app:nullable="true"
-                android:defaultValue="@null"/>
+                app:nullable="true" />
 
             <argument
                 android:name="points"
+                android:defaultValue="@null"
                 app:argType="com.google.android.gms.maps.model.LatLng[]"
-                app:nullable="true"
-                android:defaultValue="@null" />
+                app:nullable="true" />
 
             <argument
                 android:name="splits"
+                android:defaultValue="@null"
                 app:argType="dev.taimoor.treadpace.Split[]"
-                app:nullable="true"
-                android:defaultValue="@null" />
+                app:nullable="true" />
 
             <argument
                 android:name="runInfo"
+                android:defaultValue="@null"
                 app:argType="dev.taimoor.treadpace.RunInfo"
-                app:nullable="true"
-                android:defaultValue="@null"/>
+                app:nullable="true" />
 
         </action>
 
@@ -129,6 +128,7 @@
             android:defaultValue="@null"/>
         <action
             android:id="@+id/action_postRunFragment_to_homeFragment"
+            app:launchSingleTop="false"
             app:popUpTo="@id/homeFragment" />
     </fragment>
 

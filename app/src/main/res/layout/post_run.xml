@@ -1,149 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/constraintLayout">
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="viewmodel"
+            type="dev.taimoor.treadpace.data.PostRunViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/constraintLayout">
 
 
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/map_view"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@id/border_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/map_view"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/border_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/distance_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@+id/border_horizontal_2"
-        app:layout_constraintEnd_toStartOf="@id/border_vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@id/border_horizontal"
-        tools:text="Distance"
-        android:visibility="visible"/>
+        <TextView
+            android:id="@+id/distance_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@+id/border_horizontal_2"
+            app:layout_constraintEnd_toStartOf="@id/border_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/border_horizontal"
+            tools:text="Distance"
+            android:visibility="visible" />
 
-    <TextView
-        android:id="@+id/pace_treadmill_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        tools:text="Pace"
-        app:layout_constraintEnd_toStartOf="@id/border_vertical"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal" />
+        <TextView
+            android:id="@+id/pace_treadmill_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Pace"
+            app:layout_constraintEnd_toStartOf="@id/border_vertical"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal" />
 
-    <TextView
-        android:id="@+id/pace_split_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginRight="4dp"
-        tools:text="Split View"
-        app:layout_constraintEnd_toStartOf="@id/pace_separator_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
+        <TextView
+            android:id="@+id/pace_split_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="4dp"
+            tools:text="Split View"
+            app:layout_constraintEnd_toStartOf="@id/pace_separator_vertical"
+            app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
 
-    <TextView
-        android:id="@+id/pace_current_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="4dp"
-        tools:text="Split View"
-        app:layout_constraintStart_toEndOf="@id/pace_separator_vertical"
-        app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
+        <TextView
+            android:id="@+id/pace_current_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="4dp"
+            tools:text="Split View"
+            app:layout_constraintStart_toEndOf="@id/pace_separator_vertical"
+            app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
 
-    <TextView
-        android:id="@+id/time_treadmill"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/border_vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/border_horizontal_2"
-        app:layout_constraintBottom_toBottomOf="parent"
-        tools:text="Time on Treadmill"
-        android:visibility="visible"/>
+        <TextView
+            android:id="@+id/time_treadmill"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/border_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/border_horizontal_2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="Time on Treadmill"
+            android:visibility="visible" />
 
-    <TextView
-        android:id="@+id/total_time"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintStart_toStartOf="@id/border_vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/border_horizontal"
-        app:layout_constraintBottom_toBottomOf="@id/border_horizontal_2"
-        tools:text="Total Time"
-        android:visibility="visible"/>
+        <TextView
+            android:id="@+id/total_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/border_vertical"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/border_horizontal"
+            app:layout_constraintBottom_toBottomOf="@id/border_horizontal_2"
+            tools:text="Total Time"
+            android:visibility="visible" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/border_horizontal"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:id="@+id/save_run_button">
-    </com.google.android.material.floatingactionbutton.FloatingActionButton>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/border_horizontal"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:id="@+id/save_run_button">
+        </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/border_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.75"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/border_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.75" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/border_horizontal_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.875"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/border_horizontal_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.875" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/border_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.5"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/border_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/pace_separator_horizontal"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent="0.935" />
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pace_separator_horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.935" />
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/pace_separator_vertical"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_percent="0.25"/>
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/pace_separator_vertical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.25" />
 
-    <com.robinhood.spark.SparkView
-        android:id="@+id/sparkView"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <com.robinhood.spark.SparkView
+            android:id="@+id/sparkView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="SPEED"
-        app:layout_constraintBottom_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:id="@+id/speedy2"
-        android:visibility="visible">
-    </TextView>
-
-
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="SPEED"
+            app:layout_constraintBottom_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:id="@+id/speedy2"
+            android:visibility="visible">
+        </TextView>
 
 
-
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

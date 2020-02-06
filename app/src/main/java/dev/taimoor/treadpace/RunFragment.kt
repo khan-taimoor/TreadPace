@@ -58,6 +58,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(activity?.applicationContext as Context)
@@ -79,6 +80,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
     ): View? {
         setHasOptionsMenu(true)
+
+
 
         val safeArgs: RunFragmentArgs by navArgs()
         fastestInterval = safeArgs.fastestInterval
@@ -264,11 +267,10 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             .setBounds(binder.getLatLngBounds())
             .setPoints(binder.getPoints())
             .setSplits(viewModel.getArrayOfSplits())
-            .setRunInfo(RunInfo(viewModel.averagePace(), total_time.getTimeInSeconds(), binder.getDistance(),viewModel.getTimesOnTreadmill(), viewModel.getSplitsSize(), binder.getLatLngBounds()))
+            .setRunInfo(RunInfo(viewModel.averagePace(), total_time.getTimeInSeconds(), binder.getDistance(), viewModel.getSplitsSize(), viewModel.getTimesOnTreadmill(), binder.getLatLngBounds()))
 
 
         endService()
-
 
         findNavController().navigate(action)
     }
