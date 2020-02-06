@@ -155,8 +155,6 @@ class RunLocationService: Service() {
     inner class ObservablePoints : Observable(){
         val points = mutableListOf<LatLng>()
         val latLngBounds = LatLngBounds.Builder()
-        lateinit var loneObserver : Observer
-        var observerSet = false
         var distance = 0
 
         fun addPoint(point: LatLng){
@@ -187,4 +185,7 @@ class RunLocationService: Service() {
             return points[points.size - 1]
         }
     }
+
+
+
 }
