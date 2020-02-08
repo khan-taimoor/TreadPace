@@ -1,8 +1,7 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.postRunFragment
 
 
 import android.graphics.Color
-import android.graphics.Point
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.util.Log
@@ -16,7 +15,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -30,20 +28,17 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
-import dev.taimoor.treadpace.data.Phase
-import dev.taimoor.treadpace.data.PostRunViewModel
-import dev.taimoor.treadpace.data.RunViewModel
+import dev.taimoor.treadpace.*
+import dev.taimoor.treadpace.RunInfo
+import dev.taimoor.treadpace.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
-import kotlinx.android.synthetic.main.post_run.*
 import kotlinx.android.synthetic.main.post_run.distance_view
 import kotlinx.android.synthetic.main.post_run.pace_treadmill_view
 import kotlinx.android.synthetic.main.post_run.sparkView
 import kotlinx.android.synthetic.main.post_run.time_treadmill
 import kotlinx.android.synthetic.main.post_run.total_time
-import kotlinx.android.synthetic.main.post_run_phase_2.*
 import kotlinx.android.synthetic.main.run_layout.constraintLayout
 import kotlinx.android.synthetic.main.run_layout.map_view
-import org.w3c.dom.Text
 
 
 class PostRunFragment : Fragment(), OnMapReadyCallback {
@@ -84,7 +79,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        this.binding = DataBindingUtil.inflate(inflater, R.layout.post_run, container, false)
+        this.binding = DataBindingUtil.inflate(inflater,
+            R.layout.post_run, container, false)
         binding.viewmodel = this.viewModel
         binding.lifecycleOwner = this@PostRunFragment
 
@@ -137,9 +133,13 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             val splitSize = splits?.size
             val floatArray = Array<Float>(splitSize as Int) {0f}
             splits?.forEachIndexed { index, split ->
-                floatArray[index] = split.getPaceFloat()
+                floatArray[index] = split.getPace().toFloat()
             }
-            sparkView.adapter = MyAdapter(floatArray, runInfo?.treadmillPace?.toFloat() as Float)
+            sparkView.adapter =
+                MyAdapter(
+                    floatArray,
+                    runInfo?.treadmillPace?.toFloat() as Float
+                )
 
             sparkView.isScrubEnabled = true
             sparkView.scrubListener = SparkView.OnScrubListener {

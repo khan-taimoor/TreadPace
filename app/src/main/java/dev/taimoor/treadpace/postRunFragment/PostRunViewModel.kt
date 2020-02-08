@@ -1,16 +1,10 @@
-package dev.taimoor.treadpace.data
+package dev.taimoor.treadpace.postRunFragment
 
-import android.util.Log
-import androidx.databinding.Observable
-import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
-import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.Split
-import dev.taimoor.treadpace.Util
-import kotlinx.android.synthetic.main.run_layout.*
 
 class PostRunViewModel : ViewModel() {
 
@@ -36,7 +30,15 @@ class PostRunViewModel : ViewModel() {
     }
 
 
-    val split = MutableLiveData(Split(0,0,0,0, false))
+    val split = MutableLiveData(
+        Split(
+            0,
+            0,
+            0,
+            0,
+            false
+        )
+    )
     val splitText : LiveData<String> = Transformations.map(split){
         "$it"
     }

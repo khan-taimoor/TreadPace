@@ -8,7 +8,7 @@
     <data>
         <variable
             name="viewmodel"
-            type="dev.taimoor.treadpace.data.RunViewModel"/>
+            type="dev.taimoor.treadpace.runFragment.RunViewModel"/>
 
     </data>
 

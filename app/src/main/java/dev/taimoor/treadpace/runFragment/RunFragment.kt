@@ -1,4 +1,4 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.runFragment
 
 import android.app.AlertDialog
 import android.content.*
@@ -24,13 +24,11 @@ import android.widget.Chronometer
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.maps.model.PolylineOptions
-import dev.taimoor.treadpace.data.Phase
-import dev.taimoor.treadpace.data.RunViewModel
-import dev.taimoor.treadpace.data.Tick
+import dev.taimoor.treadpace.*
+import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
 import java.util.*
 
@@ -54,6 +52,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
     private val viewModel : RunViewModel by viewModels()
+    private lateinit var treadmill: TreadmillRun
     lateinit var binding: RunLayoutBinding
 
 
@@ -93,18 +92,20 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        this.binding = DataBindingUtil.inflate(inflater, R.layout.run_layout, container, false)
+        this.binding = DataBindingUtil.inflate(inflater,
+            R.layout.run_layout, container, false)
         binding.viewmodel = this.viewModel
         binding.lifecycleOwner = this@RunFragment
 
-        val phase = androidx.lifecycle.Observer<Phase> {newPhase ->
+        val phase = androidx.lifecycle.Observer<Phase> { newPhase ->
             val layout: Int by lazy {
                 when{
                     newPhase == Phase.BEFORE_RUN -> -1
                     newPhase == Phase.PHASE_ONE -> R.layout.run_layout_phase_1
                     newPhase == Phase.PHASE_TWO -> R.layout.run_layout_phase_2
                     newPhase == Phase.PHASE_THREE -> R.layout.run_layout_phase_3
-                    else -> R.layout.run_layout_phase_4
+                    newPhase == Phase.PHASE_FOUR -> R.layout.run_layout_phase_4
+                    else -> -1
                 }
 
 
@@ -120,6 +121,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
         viewModel.currentPhase.observe(binding.lifecycleOwner as LifecycleOwner, phase)
+
+        treadmill = TreadmillRun(viewModel)
+
         return binding.root
     }
 
@@ -174,7 +178,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 this.activity?.bindService(intent, connection, Context.BIND_IMPORTANT)
             }
 
-            viewModel.setPhase(Phase.PHASE_ONE)
+            treadmill.startRun()
 
 
             total_time.base = SystemClock.elapsedRealtime()
@@ -230,12 +234,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         return time.toInt()/1000
     }
 
-
-
-
     private fun tick(){
-        viewModel.updateDistance(binder.getDistance())
-        viewModel.receiveTick(Tick(total_time.getTimeInSeconds(), binder.getDistance()))
+        this.treadmill.addPointToRun(
+            Tick(
+                total_time.getTimeInSeconds(),
+                binder.getDistance(),
+                binder.getMostRecentLatLng()
+            )
+        )
     }
 
     private fun addNewPoint(){
@@ -261,27 +267,25 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     }
 
     private fun endAndSaveRun(){
-        viewModel.finishSplit(total_time.getTimeInSeconds())
+        this.treadmill.finishSplit(total_time.getTimeInSeconds())
 
         val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
             .setBounds(binder.getLatLngBounds())
             .setPoints(binder.getPoints())
-            .setSplits(viewModel.getArrayOfSplits())
-            .setRunInfo(RunInfo(viewModel.averagePace(), total_time.getTimeInSeconds(), binder.getDistance(), viewModel.getSplitsSize(), viewModel.getTimesOnTreadmill(), binder.getLatLngBounds()))
+            .setSplits(treadmill.getArrayOfSplits())
+            .setBounds(treadmill.getLatLngBounds())
+            .setRunInfo(treadmill.getRunInfo(total_time.getTimeInSeconds()))
 
-
-        endService()
+      endService()
 
         findNavController().navigate(action)
     }
 
     private fun endService(){
-
         binder.removeObserver()
         val endServiceIntent = Intent(this.context, RunLocationService::class.java)
         this.activity?.applicationContext?.stopService(endServiceIntent)
         total_time?.stop()
-
     }
 
 
@@ -295,8 +299,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             AlertDialog.Builder(it)
         }
 
-
-        val phase = viewModel.getCurrentPhase()
+        val phase = treadmill.getCurrentPhase()
         if(phase == Phase.BEFORE_RUN){
 
             builder?.setTitle("Return to home page")
