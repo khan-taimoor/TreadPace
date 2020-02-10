@@ -1,17 +1,20 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.postRunFragment
 
 
 import android.graphics.Color
-import android.graphics.Point
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -25,16 +28,17 @@ import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
-import kotlinx.android.synthetic.main.post_run.*
+import dev.taimoor.treadpace.*
+import dev.taimoor.treadpace.RunInfo
+import dev.taimoor.treadpace.Split
+import dev.taimoor.treadpace.databinding.PostRunBinding
 import kotlinx.android.synthetic.main.post_run.distance_view
 import kotlinx.android.synthetic.main.post_run.pace_treadmill_view
 import kotlinx.android.synthetic.main.post_run.sparkView
 import kotlinx.android.synthetic.main.post_run.time_treadmill
 import kotlinx.android.synthetic.main.post_run.total_time
-import kotlinx.android.synthetic.main.post_run_phase_2.*
 import kotlinx.android.synthetic.main.run_layout.constraintLayout
 import kotlinx.android.synthetic.main.run_layout.map_view
-import org.w3c.dom.Text
 
 
 class PostRunFragment : Fragment(), OnMapReadyCallback {
@@ -49,6 +53,22 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     private var polyline: Polyline? = null
 
     private var currentIndexSplit : Int? = null
+
+
+    private val viewModel : PostRunViewModel by viewModels()
+    lateinit var binding: PostRunBinding
+
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
+            findNavController().navigate(PostRunFragmentDirections.actionPostRunFragmentToHomeFragment())
+        }
+        callback.isEnabled = true
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -58,15 +78,17 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
 
 
-        return inflater.inflate(R.layout.post_run, container, false)
 
+        this.binding = DataBindingUtil.inflate(inflater,
+            R.layout.post_run, container, false)
+        binding.viewmodel = this.viewModel
+        binding.lifecycleOwner = this@PostRunFragment
 
-
-
-
+        return binding.root
     }
 
     override fun onMapReady(map: GoogleMap?) {
+
         this.map = map
 
         val safeArgs: PostRunFragmentArgs by navArgs()
@@ -84,10 +106,17 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         this.map?.addPolyline(polylineOptions)
 
 
-        distance_view.setText("" + runInfo?.totDistance)
-        pace_treadmill_view.text = "" + runInfo?.treadmillPace
-        total_time.text = "" + runInfo?.timeInSeconds
-        time_treadmill.text = "" + runInfo?.numSplitsOnTreadmill + "/" + runInfo?.numSplits
+        //TODO: move to view model
+        distance_view.text= ("${runInfo?.totDistance}")
+        pace_treadmill_view.text = " ${"%.2f".format(runInfo?.treadmillPace)}"
+        total_time.text = "${runInfo?.timeInSeconds}"
+        time_treadmill.text = "${runInfo?.numSplitsOnTreadmill} / ${runInfo?.numSplits}"
+
+//        viewModel.distance.value = runInfo?.totDistance as Int
+//        viewModel.pace.value = runInfo?.treadmillPace as Double
+//        viewModel.time.value = runInfo?.timeInSeconds as Int
+//        viewModel.timesOnTreadmill.value = runInfo?.numSplitsOnTreadmill as Int
+
 
 
         //val postRunPackage = safeArgs.postRunPackage
@@ -104,9 +133,13 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             val splitSize = splits?.size
             val floatArray = Array<Float>(splitSize as Int) {0f}
             splits?.forEachIndexed { index, split ->
-                floatArray[index] = split.getPaceFloat()
+                floatArray[index] = split.getPace().toFloat()
             }
-            sparkView.adapter = MyAdapter(floatArray, runInfo?.treadmillPace?.toFloat() as Float)
+            sparkView.adapter =
+                MyAdapter(
+                    floatArray,
+                    runInfo?.treadmillPace?.toFloat() as Float
+                )
 
             sparkView.isScrubEnabled = true
             sparkView.scrubListener = SparkView.OnScrubListener {
@@ -237,6 +270,14 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            findNavController().navigate(PostRunFragmentDirections.actionPostRunFragmentToHomeFragment())
+        }
+        return true
+    }
+
 
 
 

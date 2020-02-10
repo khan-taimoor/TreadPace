@@ -1,4 +1,4 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.runFragment
 
 import android.app.AlertDialog
 import android.content.*
@@ -21,13 +21,15 @@ import android.os.SystemClock
 import android.transition.TransitionManager
 import android.view.MenuItem
 import android.widget.Chronometer
-import androidx.activity.OnBackPressedCallback
-import androidx.activity.OnBackPressedDispatcherOwner
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
-import com.google.android.gms.maps.model.LatLngBounds
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.LifecycleOwner
 import com.google.android.gms.maps.model.PolylineOptions
-import kotlinx.android.parcel.Parcelize
+import dev.taimoor.treadpace.*
+import dev.taimoor.treadpace.R
+import dev.taimoor.treadpace.databinding.RunLayoutBinding
 import java.util.*
 
 
@@ -47,16 +49,13 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private lateinit var binder: RunLocationService.RunServiceBinder
     private val connection = Connection()
 
-    private var isPaceSet: Boolean = false
-    private var timeInSplit = 0
-    private var timeLastSplit = 0
-    private var ticksInSplit = 0
-    private var distanceInSplit = 0
-    private var distanceLastSplit = 0
-    private var timesOnTreadmill = 2
-    private val splits = mutableListOf<Split>()
 
-    private var phase : Phase = Phase.BEFORE_RUN
+
+    private val viewModel : RunViewModel by viewModels()
+    private lateinit var treadmill: TreadmillRun
+    lateinit var binding: RunLayoutBinding
+
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,6 +71,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         }
         callback.isEnabled = true
     }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -80,15 +80,51 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     ): View? {
         setHasOptionsMenu(true)
 
+
+
         val safeArgs: RunFragmentArgs by navArgs()
         fastestInterval = safeArgs.fastestInterval
         interval = safeArgs.interval
         priority = safeArgs.priority
         locationRequest = safeArgs.locationRequest
-        phase = Phase.BEFORE_RUN
         Log.i(Util.myTag, "in on create view")
 
-        return inflater.inflate(R.layout.run_layout, container, false)
+
+
+
+        this.binding = DataBindingUtil.inflate(inflater,
+            R.layout.run_layout, container, false)
+        binding.viewmodel = this.viewModel
+        binding.lifecycleOwner = this@RunFragment
+
+        val phase = androidx.lifecycle.Observer<Phase> { newPhase ->
+            val layout: Int by lazy {
+                when{
+                    newPhase == Phase.BEFORE_RUN -> -1
+                    newPhase == Phase.PHASE_ONE -> R.layout.run_layout_phase_1
+                    newPhase == Phase.PHASE_TWO -> R.layout.run_layout_phase_2
+                    newPhase == Phase.PHASE_THREE -> R.layout.run_layout_phase_3
+                    newPhase == Phase.PHASE_FOUR -> R.layout.run_layout_phase_4
+                    else -> -1
+                }
+
+
+            }
+
+            if(layout == -1)
+                return@Observer
+
+            Log.i(Util.myTag, "should be loading in $layout")
+
+            loadLayout(layout)
+        }
+
+
+        viewModel.currentPhase.observe(binding.lifecycleOwner as LifecycleOwner, phase)
+
+        treadmill = TreadmillRun(viewModel)
+
+        return binding.root
     }
 
 
@@ -142,26 +178,12 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 this.activity?.bindService(intent, connection, Context.BIND_IMPORTANT)
             }
 
-            loadLayout(R.layout.run_layout_phase_1)
-            phase = Phase.PHASE_ONE
-            isPaceSet = false
-            timeInSplit = 0
-            timeLastSplit = 0
-            ticksInSplit = 0
-            distanceInSplit = 0
-            distanceLastSplit = 0
-            timesOnTreadmill = 2
-            splits.clear()
+            treadmill.startRun()
+
 
             total_time.base = SystemClock.elapsedRealtime()
             total_time?.start()
 
-            total_time?.setOnChronometerTickListener {
-                val time = SystemClock.elapsedRealtime() - it.base
-                val h = (time / 3600000).toInt()
-                val m = ((time - h * 3600000)).toInt() / 60000
-                val s = ((time - h * 3600000 - m * 60000)).toInt() / 1000
-            }
 
             polylineOptions = PolylineOptions().color(Color.RED).width(10f)
             this.map?.addPolyline(polylineOptions)
@@ -201,27 +223,10 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         {
             addNewPoint()
             tick()
-//            Log.i(Util.myTag, "isPaceSet:$isPaceSet\n" +
-//                    "timeInSplit:$timeInSplit\n" +
-//                    "timeLastSplit:$timeLastSplit\n" +
-//                    "ticksInSplit:$ticksInSplit\n" +
-//                    "distanceInSplit:$distanceInSplit\n" +
-//                    "distanceLastSplit:$distanceLastSplit\n" +
-//                    "timesOnTreadmill:$timesOnTreadmill\n" +
-//                    "splits:$splits\n" +
-//                    "phase:$phase")
-
-
-            Log.i(Util.myTag, "ticks in split: $ticksInSplit")
-
-            if (!isPaceSet) {
-                paceIsntSet()
-            }
-            else {
-                paceIsSet()
-            }
         }
     }
+
+
 
     fun Chronometer.getTimeInSeconds(): Int{
         val time = SystemClock.elapsedRealtime() - this.base
@@ -229,13 +234,20 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         return time.toInt()/1000
     }
 
-    fun averagePace(): Double{
-        if(splits.size >= 2){
-            return (splits[0].getPace() + splits[1].getPace()) /2
-        }
-        else{
-            return -1.0
-        }
+    private fun tick(){
+        this.treadmill.addPointToRun(
+            Tick(
+                total_time.getTimeInSeconds(),
+                binder.getDistance(),
+                binder.getMostRecentLatLng()
+            )
+        )
+    }
+
+    private fun addNewPoint(){
+        polylineOptions.add(binder.getMostRecentLatLng())
+        map?.clear()
+        map?.addPolyline(polylineOptions)
     }
 
     private fun loadLayout(resourceId: Int){
@@ -247,109 +259,33 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         constraintSet.applyTo(constraintLayout)
     }
 
-    private fun resetTicks(){
-        timeLastSplit = total_time.getTimeInSeconds()
-        distanceLastSplit = binder.getDistance()
-        timeInSplit = 0
-        ticksInSplit = 0
-    }
-
-    private fun tick(){
-        distance_view.setText("" + binder.getDistance())
-        ticksInSplit += 1
-        timeInSplit = total_time.getTimeInSeconds() - timeLastSplit
-        distanceInSplit = binder.getDistance() - distanceLastSplit
-
-    }
-
-    private fun addNewPoint(){
-        polylineOptions.add(binder.getMostRecentLatLng())
-        map?.clear()
-        map?.addPolyline(polylineOptions)
-    }
-
-    private fun paceDeltaTest(){
-        val pace_difference = kotlin.math.abs(splits.last().getPace() - averagePace())
-        if(pace_difference < .5){
-            splits.last().onTreadmill = true
-            timesOnTreadmill +=1
-        }
-    }
-
-    private fun paceIsntSet(){
-        if (timeInSplit >= 30) {
-            splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), true))
-            pace_split_view.setText("" + distanceInSplit / timeInSplit)
-            resetTicks()
-
-        }
-
-        if (splits.size == 2) {
-            isPaceSet = true
-            val avgPace = averagePace()
-
-            pace_treadmill_view.setText("" + "%.2f".format(avgPace))
-            pace_current_view.setText("STARTING A NEW SPLIT")
-
-            phase = Phase.PHASE_THREE
-            loadLayout(R.layout.run_layout_phase_3)
-
-        }
-        else if (splits.size == 1) {
-            loadLayout(R.layout.run_layout_phase_2)
-            if(phase == Phase.PHASE_ONE){
-                phase = Phase.PHASE_TWO
-                loadLayout(R.layout.run_layout_phase_2)
-                pace_current_view.setText("STARTING A NEW SPLIT")
-            }
-        }
-
-        if (timeInSplit != 0) {
-            pace_current_view.setText("" + distanceInSplit / timeInSplit)
-        }
-    }
-
-    private fun paceIsSet(){
-        if (timeInSplit >= 30) {
-            splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
-            paceDeltaTest()
-
-            time_treadmill.setText("$timesOnTreadmill/${splits.size}")
-            pace_split_view.setText("" + distanceInSplit / timeInSplit)
-            pace_current_view.setText("STARTING A NEW SPLIT")
-
-            resetTicks()
-
-            if(phase == Phase.PHASE_THREE){
-                loadLayout(R.layout.run_layout_phase_4)
-                phase = Phase.PHASE_FOUR
-            }
-        }
-        else if (timeInSplit != 0) {
-            pace_current_view.setText("" + distanceInSplit / timeInSplit)
-        }
-    }
-
-    enum class Phase {
-        BEFORE_RUN, PHASE_ONE, PHASE_TWO, PHASE_THREE, PHASE_FOUR
-    }
-
-
-    private fun arrayOfSplits(): Array<Split?>{
-        val array = Array<Split?>(this@RunFragment.splits.size) {null}
-
-        this.splits.forEachIndexed { index, split ->
-            array[index] = split
-        }
-
-        return array
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == android.R.id.home){
             backButton((1 shl 0) or (1 shl 1))
         }
         return true
+    }
+
+    private fun endAndSaveRun(){
+        this.treadmill.finishSplit(total_time.getTimeInSeconds())
+
+        val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
+            .setBounds(binder.getLatLngBounds())
+            .setPoints(binder.getPoints())
+            .setSplits(treadmill.getArrayOfSplits())
+            .setBounds(treadmill.getLatLngBounds())
+            .setRunInfo(treadmill.getRunInfo(total_time.getTimeInSeconds()))
+
+      endService()
+
+        findNavController().navigate(action)
+    }
+
+    private fun endService(){
+        binder.removeObserver()
+        val endServiceIntent = Intent(this.context, RunLocationService::class.java)
+        this.activity?.applicationContext?.stopService(endServiceIntent)
+        total_time?.stop()
     }
 
 
@@ -363,7 +299,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             AlertDialog.Builder(it)
         }
 
-        if(this.phase == Phase.BEFORE_RUN){
+        val phase = treadmill.currentPhase
+        if(phase == Phase.BEFORE_RUN){
 
             builder?.setTitle("Return to home page")
 
@@ -377,7 +314,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        if(this.phase > Phase.BEFORE_RUN){
+        if(phase > Phase.BEFORE_RUN){
 
             builder?.setTitle("Change run state?")
             if(flags and (1 shl 0) == (1 shl 0)){
@@ -395,7 +332,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        if (this.phase >= Phase.PHASE_FOUR) {
+        if (phase >= Phase.PHASE_FOUR) {
             if (flags and (1 shl 2) == (1 shl 2)) {
                 builder?.setPositiveButton("Save") { dialog, id ->
                     Log.i(Util.myTag, "Exit and save")
@@ -404,32 +341,5 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
         builder?.show()
-    }
-
-    private fun endAndSaveRun(){
-
-
-        splits.add(Split(distanceInSplit, ticksInSplit, timeLastSplit, total_time.getTimeInSeconds(), false))
-
-        val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
-            .setBounds(binder.getLatLngBounds())
-            .setPoints(binder.getPoints())
-            .setSplits(arrayOfSplits())
-            .setRunInfo(RunInfo(averagePace(), total_time.getTimeInSeconds(), binder.getDistance(),timesOnTreadmill, splits.size, binder.getLatLngBounds()))
-
-
-        endService()
-
-
-        findNavController().navigate(action)
-    }
-
-    private fun endService(){
-
-        binder.removeObserver()
-        val endServiceIntent = Intent(this.context, RunLocationService::class.java)
-        this.activity?.applicationContext?.stopService(endServiceIntent)
-        total_time?.stop()
-
     }
 }
