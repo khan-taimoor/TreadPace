@@ -299,7 +299,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             AlertDialog.Builder(it)
         }
 
-        val phase = treadmill.getCurrentPhase()
+        val phase = treadmill.currentPhase
         if(phase == Phase.BEFORE_RUN){
 
             builder?.setTitle("Return to home page")

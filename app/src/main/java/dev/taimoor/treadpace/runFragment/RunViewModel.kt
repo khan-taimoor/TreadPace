@@ -9,7 +9,7 @@ import com.google.android.gms.maps.model.LatLng
 import dev.taimoor.treadpace.RunOrder
 import dev.taimoor.treadpace.Util
 
-class RunViewModel : ViewModel() {
+class RunViewModel() : ViewModel() {
 
 
     val numSplits = MutableLiveData(2)

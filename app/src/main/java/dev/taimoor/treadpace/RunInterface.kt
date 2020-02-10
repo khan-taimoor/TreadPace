@@ -10,7 +10,7 @@ interface RunInterface {
     val bnds: LatLngBounds.Builder
     val points : MutableList<LatLng>
 
-    fun addPointToRun(tick: Tick)
+    fun addPointToRun(tick: Tick): RunOrder.RunOrderBuilder
     fun updateViewModel(runViewModel: RunViewModel, builder: RunOrder.RunOrderBuilder)
     fun getLatLngBounds(): LatLngBounds
 }

@@ -9,16 +9,16 @@ import dev.taimoor.treadpace.runFragment.Tick
 class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
     override val bnds: LatLngBounds.Builder
     override val points: MutableList<LatLng>
-    private var currentDistance = 0
-    private var timeInSplit = 0
-    private var timeLastSplit = 0
-    private var ticksInSplit = 0
-    private var distanceInSplit = 0
-    private var distanceLastSplit = 0
-    private var timesOnTreadmill = 2
-    private val splits = mutableListOf<Split>()
-    private var isPaceSet: Boolean = false
-    private var currentPhase = (Phase.BEFORE_RUN)
+    var currentDistance = 0
+    var timeInSplit = 0
+    var timeLastSplit = 0
+    var ticksInSplit = 0
+    var distanceInSplit = 0
+    var distanceLastSplit = 0
+    var timesOnTreadmill = 2
+    val splits = mutableListOf<Split>()
+    var isPaceSet: Boolean = false
+    var currentPhase = (Phase.BEFORE_RUN)
 
 
     init {
@@ -26,7 +26,7 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
         points = mutableListOf<LatLng>()
     }
 
-    override fun addPointToRun(tick: Tick) {
+    override fun addPointToRun(tick: Tick): RunOrder.RunOrderBuilder {
         bnds.include(tick.point)
         val builder = RunOrder.RunOrderBuilder()
 
@@ -46,6 +46,8 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
         }
 
         updateViewModel(viewModel as RunViewModel, builder)
+
+        return builder
     }
 
     private fun paceIsntSet(tick: Tick, builder: RunOrder.RunOrderBuilder){
@@ -59,21 +61,15 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
                     true
                 )
             )
-            //paceSplitDouble.value = distanceInSplit.toDouble() / timeInSplit
             resetTicks(tick)
 
             if (splits.size == 2){
                 isPaceSet = true
-                //paceTreadmillDouble.value = averagePace()
                 builder.paceTreadmillDouble(averagePace())
                 builder.paceSplitDouble(splits.last().getPace())
                 builder.paceCurrentDouble(0.0)
-                //paceSplitDouble.value = splits.last().getPace()
-                //paceCurrentDouble.value = 0.0
                 builder.phase(Phase.PHASE_THREE)
                 currentPhase = Phase.PHASE_THREE
-//                currentPhase.value =
-//                    Phase.PHASE_THREE
             }
 
             if (splits.size == 1){
@@ -81,17 +77,12 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
                 builder.paceCurrentDouble(0.0)
                 builder.phase(Phase.PHASE_TWO)
                 currentPhase = Phase.PHASE_TWO
-//                paceSplitDouble.value = splits.last().getPace()
-//                paceCurrentDouble.value = 0.0
-//                currentPhase.value =
-//                    Phase.PHASE_TWO
             }
             return
         }
 
         if (timeInSplit != 0) {
             builder.paceCurrentDouble(distanceInSplit.toDouble() / timeInSplit)
-//            paceCurrentDouble.value = distanceInSplit.toDouble() / timeInSplit
         }
     }
 
@@ -109,21 +100,16 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
             paceDeltaTest(splits.last(), builder)
             builder.paceSplitDouble(splits.last().getPace())
             builder.paceCurrentDouble(0.0)
-//            paceSplitDouble.value = splits.last().getPace()
-//            paceCurrentDouble.value = 0.0
 
             resetTicks(tick)
 
             if(currentPhase == Phase.PHASE_THREE){
                 currentPhase = Phase.PHASE_FOUR
                 builder.phase(Phase.PHASE_FOUR)
-//                currentPhase.value =
-//                    Phase.PHASE_FOUR
             }
         }
         else if (timeInSplit != 0) {
             builder.paceCurrentDouble(distanceInSplit.toDouble() / timeInSplit)
-//            paceCurrentDouble.value = distanceInSplit.toDouble() / timeInSplit
         }
     }
 
@@ -184,13 +170,7 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
         return this.splits.size
     }
 
-    fun getTimesOnTreadmill(): Int{
-        return this.timesOnTreadmill
-    }
 
-    fun getCurrentPhase(): Phase{
-        return this.currentPhase
-    }
 
     override fun getLatLngBounds(): LatLngBounds{
         return this.bnds.build()
