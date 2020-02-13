@@ -270,9 +270,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         this.treadmill.finishSplit(total_time.getTimeInSeconds())
 
         val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
-            .setBounds(binder.getLatLngBounds())
-            .setPoints(binder.getPoints())
-            .setSplits(treadmill.getArrayOfSplits())
+            .setBounds(treadmill.bnds.build())
+            .setPoints(treadmill.points.toTypedArray())
+            .setSplits(treadmill.splits.toTypedArray())
             .setBounds(treadmill.getLatLngBounds())
             .setRunInfo(treadmill.getRunInfo(total_time.getTimeInSeconds()))
 

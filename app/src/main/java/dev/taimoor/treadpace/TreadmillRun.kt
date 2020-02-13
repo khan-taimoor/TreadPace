@@ -149,7 +149,6 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
         }
 
         return array
-
     }
 
     fun finishSplit(endTime: Int) {
