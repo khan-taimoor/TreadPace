@@ -26,6 +26,7 @@ import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
+import com.google.gson.Gson
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import dev.taimoor.treadpace.*
@@ -94,9 +95,13 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         val safeArgs: PostRunFragmentArgs by navArgs()
 
 
+        val gson = Gson()
         this.points = safeArgs.points
         this.splits = safeArgs.splits
         this.runInfo = safeArgs.runInfo
+        Log.i(Util.myTag, gson.toJson(runInfo))
+        Log.i(Util.myTag, gson.toJson(splits))
+        Log.i(Util.myTag, gson.toJson(points))
 
 
 

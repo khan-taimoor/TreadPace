@@ -276,7 +276,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             .setBounds(treadmill.getLatLngBounds())
             .setRunInfo(treadmill.getRunInfo(total_time.getTimeInSeconds()))
 
-      endService()
+        endService()
 
         findNavController().navigate(action)
     }
