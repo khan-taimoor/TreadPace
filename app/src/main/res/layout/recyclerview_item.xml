@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+        <variable
+            name="run"
+            type="dev.taimoor.treadpace.room.RunEntity" />
+
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+
+
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/distanceView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{run.runInfo.totDistance.toString()}"
+            tools:text="Distance"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/paceView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:text="@{Double.toString(run.runInfo.treadmillPace)}"
+            tools:text="% Pace"
+            android:layout_below="@id/distanceView" />
+
+        <TextView
+            android:id="@+id/timeView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:text="@{Integer.toString(run.runInfo.timeInSeconds)}"
+            tools:text="Time of Run" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/dateView"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/timeView"
+            tools:text="Date"
+            android:text="@{run.run_date.toString()}"/>
+
+    </RelativeLayout>
+</layout>

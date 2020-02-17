@@ -15,6 +15,7 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -33,13 +34,12 @@ import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.RunInfo
 import dev.taimoor.treadpace.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
-import kotlinx.android.synthetic.main.post_run.distance_view
-import kotlinx.android.synthetic.main.post_run.pace_treadmill_view
-import kotlinx.android.synthetic.main.post_run.sparkView
-import kotlinx.android.synthetic.main.post_run.time_treadmill
-import kotlinx.android.synthetic.main.post_run.total_time
+import dev.taimoor.treadpace.room.HomeViewModel
+import dev.taimoor.treadpace.room.RunEntity
+import kotlinx.android.synthetic.main.post_run.*
 import kotlinx.android.synthetic.main.run_layout.constraintLayout
 import kotlinx.android.synthetic.main.run_layout.map_view
+import java.time.OffsetDateTime
 
 
 class PostRunFragment : Fragment(), OnMapReadyCallback {
@@ -64,7 +64,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
 
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-            findNavController().navigate(PostRunFragmentDirections.actionPostRunFragmentToHomeFragment())
+            findNavController().navigate(PostRunFragmentDirections.saveRun())
         }
         callback.isEnabled = true
 
@@ -167,10 +167,23 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-            val saveRunButton = this.activity?.findViewById<FloatingActionButton>(R.id.save_run_button)
-            saveRunButton?.setOnClickListener {
-                findNavController().navigate(PostRunFragmentDirections.actionPostRunFragmentToHomeFragment())
+
+            save_run_button.setOnClickListener {
+
+                val action = PostRunFragmentDirections.saveRun().setCompletedRun(
+                    RunEntity(this.runInfo as RunInfo, this.splits as Array<Split>,
+                        this.points as Array<LatLng>, OffsetDateTime.now()))
+                    .setTest(69)
+
+                val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
+                homeViewModel.insert(RunEntity(this.runInfo as RunInfo, this.splits as Array<Split>,
+                    this.points as Array<LatLng>, OffsetDateTime.now()))
+
+                findNavController().navigate(action)
+
             }
+
 
         }
 
@@ -278,7 +291,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == android.R.id.home){
-            findNavController().navigate(PostRunFragmentDirections.actionPostRunFragmentToHomeFragment())
+            findNavController().navigate(PostRunFragmentDirections.saveRun())
         }
         return true
     }

@@ -7,10 +7,14 @@ import com.google.gson.reflect.TypeToken
 import dev.taimoor.treadpace.RunInfo
 import dev.taimoor.treadpace.Split
 import java.lang.reflect.Type
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
 
 class Converters {
 
     private val gson = Gson()
+    private val formatter = DateTimeFormatter.ISO_OFFSET_DATE_TIME
+
 
     @TypeConverter
     fun stringToRunInfo(value: String): RunInfo {
@@ -42,6 +46,19 @@ class Converters {
     @TypeConverter
     fun arrayLatLngToString(value: Array<LatLng>): String {
         return gson.toJson(value)
+    }
+
+    // source: https://medium.com/androiddevelopers/room-time-2b4cf9672b98
+    @TypeConverter
+    fun toOffsetDateTime(value: String?): OffsetDateTime? {
+        return value?.let {
+            return formatter.parse(value, OffsetDateTime::from)
+        }
+    }
+
+    @TypeConverter
+    fun fromOffsetDateTime(date: OffsetDateTime?): String? {
+        return date?.format(formatter)
     }
 
 

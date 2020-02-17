@@ -8,23 +8,29 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
-import android.view.*
-import android.widget.Button
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navOptions
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.google.android.material.navigation.NavigationView
+import dev.taimoor.treadpace.room.HomeViewModel
+import dev.taimoor.treadpace.room.RunEntity
+import dev.taimoor.treadpace.room.RunListAdapter
+import kotlinx.android.synthetic.main.home_layout.*
 
 class HomeFragment : Fragment() {
+
+
+    val args : HomeFragmentArgs by navArgs()
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -33,7 +39,6 @@ class HomeFragment : Fragment() {
     ): View? {
         setHasOptionsMenu(true)
 
-        Log.i(Util.myTag, "At home fragment ${this.activity?.supportFragmentManager?.backStackEntryCount}")
         return inflater.inflate(R.layout.home_layout, container, false)
 
     }
@@ -42,7 +47,32 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        val recyclerView = recyclerview
+        val adapter = RunListAdapter(this.context as Context)
+        recyclerView.adapter = adapter
+        recyclerView.layoutManager = LinearLayoutManager(this.context as Context)
+
+        val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+
+        homeViewModel.allRuns.observe(this, Observer { runs ->
+            runs?.let { adapter.setRuns(it) }
+        })
+
+
+        Log.i(Util.myTag, "${args.test}")
+
+
+        args.completedRun?.let {
+            Log.i(Util.myTag, "Inserting a run")
+            homeViewModel.insert(it)
+
+        }
+
+
+
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
+
+
 
         val options = navOptions {
             anim {
