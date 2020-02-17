@@ -7,6 +7,9 @@
             name="run"
             type="dev.taimoor.treadpace.room.RunEntity" />
 
+        <variable
+            name="formatter"
+            type="java.time.format.DateTimeFormatter" />
     </data>
 
     <RelativeLayout
@@ -53,7 +56,7 @@
             android:layout_alignParentEnd="true"
             android:layout_below="@id/timeView"
             tools:text="Date"
-            android:text="@{run.run_date.toString()}"/>
+            android:text="@{run.run_date.format(formatter)}"/>
 
     </RelativeLayout>
 </layout>

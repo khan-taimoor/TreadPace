@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.databinding.RecyclerviewItemBinding
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import java.time.format.DateTimeFormatter
 
 class RunListAdapter internal constructor(context: Context) :
     RecyclerView.Adapter<RunListAdapter.RunViewHolder>(){
@@ -40,6 +41,7 @@ class RunListAdapter internal constructor(context: Context) :
 
         fun bind(run: RunEntity){
             binding.run = run
+            binding.formatter = DateTimeFormatter.ISO_LOCAL_DATE
         }
     }
 }
