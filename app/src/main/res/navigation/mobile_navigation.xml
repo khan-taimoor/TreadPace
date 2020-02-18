@@ -59,13 +59,6 @@
             app:argType="com.google.android.gms.location.LocationRequest"
             app:nullable="true"
             android:defaultValue="@null" />
-
-        <action
-            android:id="@+id/action_runFragment_toHomeRunFragment"
-            app:popUpTo="@id/homeFragment">
-
-        </action>
-
         <action
             android:id="@+id/action_runFragment_to_postRunFragment"
             app:destination="@id/postRunFragment">
@@ -123,12 +116,11 @@
             app:argType="dev.taimoor.treadpace.RunInfo"
             app:nullable="true"
             android:defaultValue="@null"/>
-
-        <action
-            android:id="@+id/saveRun"
-            app:popUpTo="@id/homeFragment">
-        </action>
     </fragment>
+
+    <action
+        android:id="@+id/global_go_home"
+        app:popUpTo="@id/homeFragment"/>
 
 
 </navigation>

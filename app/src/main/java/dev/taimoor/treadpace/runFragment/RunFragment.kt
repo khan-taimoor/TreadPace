@@ -310,7 +310,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
             builder?.setPositiveButton("Return") { dialog, id ->
                 Log.i(Util.myTag, "Return to run screen")
-                findNavController().navigate(RunFragmentDirections.actionRunFragmentToHomeRunFragment())
+                findNavController().navigate(R.id.global_go_home)
             }
         }
 
@@ -326,7 +326,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 builder?.setNegativeButton("Exit w/o saving"){ dialog, id ->
                     Log.i(Util.myTag, "Exit run without saving")
                     endService()
-                    findNavController().navigate(RunFragmentDirections.actionRunFragmentToHomeRunFragment())
+                    findNavController().navigate(R.id.global_go_home)
 
                 }
             }

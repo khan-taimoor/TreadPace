@@ -64,7 +64,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
 
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-            findNavController().navigate(PostRunFragmentDirections.saveRun())
+            findNavController().navigate(R.id.global_go_home)
         }
         callback.isEnabled = true
 
@@ -169,15 +169,11 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
             save_run_button.setOnClickListener {
-
-                val action = PostRunFragmentDirections.saveRun()
-
                 val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-
                 homeViewModel.insert(RunEntity(this.runInfo as RunInfo, this.splits as Array<Split>,
                     this.points as Array<LatLng>, OffsetDateTime.now()))
 
-                findNavController().navigate(action)
+                findNavController().navigate(R.id.global_go_home)
 
             }
 
@@ -288,7 +284,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == android.R.id.home){
-            findNavController().navigate(PostRunFragmentDirections.saveRun())
+            findNavController().navigate(R.id.global_go_home)
         }
         return true
     }
