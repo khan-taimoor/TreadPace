@@ -12,18 +12,6 @@
         android:label="HomeFragment"
         tools:layout="@layout/home_layout" >
 
-        <argument
-            android:name="completedRun"
-            app:argType="dev.taimoor.treadpace.room.RunEntity"
-            app:nullable="true"
-            android:defaultValue="@null"/>
-
-        <argument
-            android:name="test"
-            android:defaultValue="-999"
-            app:argType="integer" />
-
-
         <action
             android:id="@+id/action_homeFragment_to_runFragment"
             app:destination="@id/runFragment">
@@ -135,24 +123,12 @@
             app:argType="dev.taimoor.treadpace.RunInfo"
             app:nullable="true"
             android:defaultValue="@null"/>
+
         <action
             android:id="@+id/saveRun"
             app:popUpTo="@id/homeFragment">
-            <argument
-                android:name="completedRun"
-                app:argType="dev.taimoor.treadpace.room.RunEntity"
-                app:nullable="true"
-                android:defaultValue="@null"/>
-            <argument
-                android:name="test"
-                android:defaultValue="1"
-                app:argType="integer" />
         </action>
     </fragment>
-
-
-
-
 
 
 </navigation>

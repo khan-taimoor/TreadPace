@@ -28,7 +28,6 @@ import kotlinx.android.synthetic.main.home_layout.*
 class HomeFragment : Fragment() {
 
 
-    val args : HomeFragmentArgs by navArgs()
 
 
     override fun onCreateView(
@@ -57,18 +56,6 @@ class HomeFragment : Fragment() {
         homeViewModel.allRuns.observe(this, Observer { runs ->
             runs?.let { adapter.setRuns(it) }
         })
-
-
-        Log.i(Util.myTag, "${args.test}")
-
-
-        args.completedRun?.let {
-            Log.i(Util.myTag, "Inserting a run")
-            homeViewModel.insert(it)
-
-        }
-
-
 
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
 

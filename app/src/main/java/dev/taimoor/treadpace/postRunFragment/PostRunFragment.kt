@@ -170,10 +170,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
             save_run_button.setOnClickListener {
 
-                val action = PostRunFragmentDirections.saveRun().setCompletedRun(
-                    RunEntity(this.runInfo as RunInfo, this.splits as Array<Split>,
-                        this.points as Array<LatLng>, OffsetDateTime.now()))
-                    .setTest(69)
+                val action = PostRunFragmentDirections.saveRun()
 
                 val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
