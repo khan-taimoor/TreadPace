@@ -30,6 +30,8 @@ import com.google.android.gms.maps.model.PolylineOptions
 import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import dev.taimoor.treadpace.room.RunEntity
+import java.time.OffsetDateTime
 import java.util.*
 
 
@@ -269,16 +271,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private fun endAndSaveRun(){
         this.treadmill.finishSplit(total_time.getTimeInSeconds())
 
-        val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
-            .setBounds(treadmill.bnds.build())
-            .setPoints(treadmill.points.toTypedArray())
-            .setSplits(treadmill.splits.toTypedArray())
-            .setBounds(treadmill.getLatLngBounds())
-            .setRunInfo(treadmill.getRunInfo(total_time.getTimeInSeconds()))
 
+        val runEntity = RunEntity(treadmill.getRunInfo(total_time.getTimeInSeconds()),
+            treadmill.splits.toTypedArray(), treadmill.points.toTypedArray(), OffsetDateTime.now())
+
+       // val action = RunFragmentDirections.actionRunFragmentToPostRunFragment().setRunEntity(runEntity)
         endService()
 
-        findNavController().navigate(action)
+        findNavController().navigate(RunFragmentDirections.actionRunFragmentToPostRunFragment(runEntity))
     }
 
     private fun endService(){

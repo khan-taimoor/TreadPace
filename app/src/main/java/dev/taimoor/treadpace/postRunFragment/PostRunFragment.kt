@@ -94,11 +94,12 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         val safeArgs: PostRunFragmentArgs by navArgs()
 
+        val runEntity = safeArgs.runEntity
 
         val gson = Gson()
-        this.points = safeArgs.points
-        this.splits = safeArgs.splits
-        this.runInfo = safeArgs.runInfo
+        this.points = runEntity.points
+        this.splits = runEntity.splits
+        this.runInfo = runEntity.runInfo
         Log.i(Util.myTag, gson.toJson(runInfo))
         Log.i(Util.myTag, gson.toJson(splits))
         Log.i(Util.myTag, gson.toJson(points))
@@ -170,9 +171,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
             save_run_button.setOnClickListener {
                 val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
-                homeViewModel.insert(RunEntity(this.runInfo as RunInfo, this.splits as Array<Split>,
-                    this.points as Array<LatLng>, OffsetDateTime.now()))
-
+                homeViewModel.insert(runEntity)
                 findNavController().navigate(R.id.global_go_home)
 
             }
