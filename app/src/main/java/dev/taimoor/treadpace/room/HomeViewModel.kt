@@ -21,5 +21,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         repository.insert(run)
     }
 
+    //TODO: Add ability to delete multiple runs from home screen by highlighting
+    fun delete(run: RunEntity) = viewModelScope.launch {
+        repository.delete(run)
+    }
+
 
 }

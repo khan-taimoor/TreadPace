@@ -5,10 +5,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.transition.TransitionManager
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.MenuItem
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
@@ -18,6 +15,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.ui.onNavDestinationSelected
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -54,6 +52,11 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     private var polyline: Polyline? = null
 
     private var currentIndexSplit : Int? = null
+
+    val safeArgs: PostRunFragmentArgs by navArgs()
+
+
+    lateinit var runEntity: RunEntity
 
 
     private val viewModel : PostRunViewModel by viewModels()
@@ -92,9 +95,13 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         this.map = map
 
-        val safeArgs: PostRunFragmentArgs by navArgs()
 
-        val runEntity = safeArgs.runEntity
+
+
+        runEntity = safeArgs.runEntity
+
+        Log.i(Util.myTag, "id: ${runEntity.id}")
+
 
         val gson = Gson()
         this.points = runEntity.points
@@ -282,10 +289,29 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+
+
         if(item.itemId == android.R.id.home){
             findNavController().navigate(R.id.global_go_home)
         }
+        else if(item.itemId == R.id.delete){
+            Log.i(Util.myTag, "Delete being pressed")
+            val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+            homeViewModel.delete(runEntity)
+            findNavController().navigate(R.id.global_go_home)
+
+        }
         return true
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+
+        // TODO: Only show this option when the run was opened from home screen
+        inflater.inflate(R.menu.post_run_menu, menu)
     }
 
 
