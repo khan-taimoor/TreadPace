@@ -9,9 +9,9 @@ import dev.taimoor.treadpace.Split
 class PostRunViewModel : ViewModel() {
 
 
-    val timesOnTreadmill = MutableLiveData(2)
+    val timesOnTreadmill = MutableLiveData(Pair(0,2))
     val timesOnTreadmillText : LiveData<String> = Transformations.map(timesOnTreadmill){
-        "$$it"  // need divisor
+        "${it.first} / ${it.second}"
     }
 
     val distance = MutableLiveData(0)
@@ -21,7 +21,7 @@ class PostRunViewModel : ViewModel() {
 
     val pace = MutableLiveData(0.0)
     val paceText : LiveData<String> = Transformations.map(pace){
-        "$it"
+        "%.2f".format(it)
     }
 
     val time = MutableLiveData(0)
@@ -29,18 +29,14 @@ class PostRunViewModel : ViewModel() {
         "$it"
     }
 
-
-    val split = MutableLiveData(
-        Split(
-            0,
-            0,
-            0,
-            0,
-            false
-        )
-    )
+    val split = MutableLiveData(Pair(-1, 0.0))
     val splitText : LiveData<String> = Transformations.map(split){
-        "$it"
+        if (it.first == -1){
+            "Slide to show run info"
+        }
+        else{
+            "Split: ${it.first} Pace: ${"%.2f".format(it.second)}"
+        }
     }
 }
 

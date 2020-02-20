@@ -12,6 +12,7 @@ import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.databinding.RecyclerviewItemBinding
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 
 class RunListAdapter internal constructor(context: Context) :
@@ -57,7 +58,8 @@ class RunListAdapter internal constructor(context: Context) :
 
         fun bind(run: RunEntity){
             binding.run = run
-            binding.formatter = DateTimeFormatter.ISO_LOCAL_DATE
+            binding.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
+            binding.decimalFormatter = DecimalFormat("0.00")
         }
     }
 }

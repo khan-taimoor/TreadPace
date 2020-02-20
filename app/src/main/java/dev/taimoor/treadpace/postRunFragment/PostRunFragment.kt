@@ -15,7 +15,6 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.onNavDestinationSelected
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -24,7 +23,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.gson.Gson
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
@@ -37,7 +35,6 @@ import dev.taimoor.treadpace.room.RunEntity
 import kotlinx.android.synthetic.main.post_run.*
 import kotlinx.android.synthetic.main.run_layout.constraintLayout
 import kotlinx.android.synthetic.main.run_layout.map_view
-import java.time.OffsetDateTime
 
 
 class PostRunFragment : Fragment(), OnMapReadyCallback {
@@ -82,6 +79,16 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         setHasOptionsMenu(true)
 
 
+        runEntity = safeArgs.runEntity
+
+        viewModel.timesOnTreadmill.postValue(Pair(runEntity.runInfo.numSplitsOnTreadmill.toInt(),
+            runEntity.runInfo.numSplits.toInt()))
+        viewModel.distance.postValue(runEntity.runInfo.totDistance.toInt())
+        viewModel.pace.postValue(runEntity.runInfo.treadmillPace)
+
+        Log.i(Util.myTag, "time ${runEntity.runInfo.timeInSeconds}")
+        viewModel.time.postValue(runEntity.runInfo.timeInSeconds.toInt())
+
 
         this.binding = DataBindingUtil.inflate(inflater,
             R.layout.post_run, container, false)
@@ -98,7 +105,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        runEntity = safeArgs.runEntity
+
 
         Log.i(Util.myTag, "id: ${runEntity.id}")
 
@@ -119,11 +126,6 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         this.map?.addPolyline(polylineOptions)
 
 
-        //TODO: move to view model
-        distance_view.text= ("${runInfo?.totDistance}")
-        pace_treadmill_view.text = " ${"%.2f".format(runInfo?.treadmillPace)}"
-        total_time.text = "${runInfo?.timeInSeconds}"
-        time_treadmill.text = "${runInfo?.numSplitsOnTreadmill} / ${runInfo?.numSplits}"
 
 //        viewModel.distance.value = runInfo?.totDistance as Int
 //        viewModel.pace.value = runInfo?.treadmillPace as Double
@@ -139,7 +141,6 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, 50)
         this.map?.animateCamera(cu)
 
-        val speed = this.activity?.findViewById<TextView>(R.id.speedy2)
 
         if(splits?.size != null){
 
@@ -161,8 +162,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
                     val pace = splits?.get(index)?.getPace()
                     splitToCreateForPolyline(index)
                     pace?.let {
-                        //Log.i(Util.myTag, "$index $pace")
-                        speed?.setText("Split: $index Pace: $pace")
+                        viewModel.split.postValue(Pair(index, pace))
 
 
                     }

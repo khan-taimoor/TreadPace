@@ -147,7 +147,7 @@
         android:text="SPEED"
         app:layout_constraintBottom_toTopOf="@id/sparkView"
         app:layout_constraintStart_toStartOf="@id/sparkView"
-        android:id="@+id/speedy2"
+        android:id="@+id/split_text"
         android:visibility="visible">
     </TextView>
 

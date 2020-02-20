@@ -35,13 +35,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="@id/border_horizontal"
             tools:text="Distance"
-            android:visibility="visible" />
+            android:visibility="visible"
+            android:text="@{viewmodel.distanceText}"/>
 
         <TextView
             android:id="@+id/pace_treadmill_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             tools:text="Pace"
+            android:text="@{viewmodel.paceText}"
             app:layout_constraintEnd_toStartOf="@id/border_vertical"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/pace_separator_horizontal" />
@@ -50,7 +52,7 @@
             android:id="@+id/pace_split_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginRight="4dp"
+            android:layout_marginEnd="4dp"
             tools:text="Split View"
             app:layout_constraintEnd_toStartOf="@id/pace_separator_vertical"
             app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
@@ -59,13 +61,14 @@
             android:id="@+id/pace_current_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="4dp"
+            android:layout_marginStart="4dp"
             tools:text="Split View"
             app:layout_constraintStart_toEndOf="@id/pace_separator_vertical"
             app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal" />
 
         <TextView
             android:id="@+id/time_treadmill"
+            android:text="@{viewmodel.timesOnTreadmillText}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="@id/border_vertical"
@@ -79,6 +82,7 @@
             android:id="@+id/total_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{viewmodel.timeText}"
             app:layout_constraintStart_toStartOf="@id/border_vertical"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/border_horizontal"
@@ -143,10 +147,11 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="SPEED"
             app:layout_constraintBottom_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            android:id="@+id/speedy2"
+            android:id="@+id/split_text"
+            android:text="@{viewmodel.splitText}"
+
             android:visibility="visible">
         </TextView>
 
