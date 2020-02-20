@@ -38,6 +38,8 @@ class PostRunViewModel : ViewModel() {
             "Split: ${it.first} Pace: ${"%.2f".format(it.second)}"
         }
     }
+
+    var savingRun = MutableLiveData(false)
 }
 
 

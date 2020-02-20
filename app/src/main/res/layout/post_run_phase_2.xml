@@ -87,6 +87,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
+        android:visibility="gone"
         android:id="@+id/save_run_button">
     </com.google.android.material.floatingactionbutton.FloatingActionButton>
 

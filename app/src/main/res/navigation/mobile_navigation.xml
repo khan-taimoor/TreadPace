@@ -100,8 +100,7 @@
             app:argType="dev.taimoor.treadpace.room.RunEntity" />
         <argument
             android:name="savingRun"
-            app:argType="boolean"
-            android:defaultValue="false">
+            app:argType="boolean">
         </argument>
     </fragment>
 

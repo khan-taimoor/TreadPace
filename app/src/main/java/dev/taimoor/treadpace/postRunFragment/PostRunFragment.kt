@@ -6,9 +6,9 @@ import android.os.Bundle
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.*
-import android.widget.TextView
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -81,12 +81,16 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         runEntity = safeArgs.runEntity
 
+
+        val saving = safeArgs.savingRun
+
+        Log.i(Util.myTag, "Saving run: $saving")
+        viewModel.savingRun.postValue(safeArgs.savingRun)
+
         viewModel.timesOnTreadmill.postValue(Pair(runEntity.runInfo.numSplitsOnTreadmill.toInt(),
             runEntity.runInfo.numSplits.toInt()))
         viewModel.distance.postValue(runEntity.runInfo.totDistance.toInt())
         viewModel.pace.postValue(runEntity.runInfo.treadmillPace)
-
-        Log.i(Util.myTag, "time ${runEntity.runInfo.timeInSeconds}")
         viewModel.time.postValue(runEntity.runInfo.timeInSeconds.toInt())
 
 
@@ -107,16 +111,16 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-        Log.i(Util.myTag, "id: ${runEntity.id}")
+//        Log.i(Util.myTag, "id: ${runEntity.id}")
 
 
         val gson = Gson()
         this.points = runEntity.points
         this.splits = runEntity.splits
         this.runInfo = runEntity.runInfo
-        Log.i(Util.myTag, gson.toJson(runInfo))
-        Log.i(Util.myTag, gson.toJson(splits))
-        Log.i(Util.myTag, gson.toJson(points))
+//        Log.i(Util.myTag, gson.toJson(runInfo))
+//        Log.i(Util.myTag, gson.toJson(splits))
+//        Log.i(Util.myTag, gson.toJson(points))
 
 
 
@@ -313,8 +317,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         // TODO: Only show this option when the run was opened from home screen
         inflater.inflate(R.menu.post_run_menu, menu)
     }
-
-
-
-
+}
+@BindingAdapter("app:showIfSavingRun")
+fun showIfSavingRun(view: View, savingRun: Boolean){
+    Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
+    view.visibility = if (savingRun) View.VISIBLE else View.GONE
 }
