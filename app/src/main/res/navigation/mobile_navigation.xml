@@ -43,7 +43,7 @@
             <argument
                 android:name="savingRun"
                 app:argType="boolean"
-                android:defaultValue="true">
+                android:defaultValue="false">
             </argument>
 
         </action>

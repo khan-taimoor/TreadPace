@@ -2,9 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="dev.taimoor.treadpace.MainActivity">
+    <group android:checkableBehavior="none"
+        android:id="@+id/testgroup">
+
     <item
         android:id="@+id/delete"
         android:orderInCategory="100"
         android:title="@string/delete_run"
         app:showAsAction="never" />
+    </group>
+
 </menu>

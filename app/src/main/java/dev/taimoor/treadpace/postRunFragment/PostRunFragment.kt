@@ -4,10 +4,12 @@ package dev.taimoor.treadpace.postRunFragment
 import android.graphics.Color
 import android.os.Bundle
 import android.transition.TransitionManager
+import android.transition.Visibility
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -315,11 +317,14 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         menu.clear()
 
         // TODO: Only show this option when the run was opened from home screen
-        inflater.inflate(R.menu.post_run_menu, menu)
+        if(!safeArgs.savingRun) {
+            inflater.inflate(R.menu.post_run_menu, menu)
+        }
     }
 }
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
     Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
-    view.visibility = if (savingRun) View.VISIBLE else View.GONE
+    view.visibility = if (!savingRun) View.GONE else View.VISIBLEQ
+
 }
