@@ -325,6 +325,6 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
     Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
-    view.visibility = if (!savingRun) View.GONE else View.VISIBLEQ
-
+    view.visibility = if (savingRun) View.VISIBLE else View.GONE
 }
+

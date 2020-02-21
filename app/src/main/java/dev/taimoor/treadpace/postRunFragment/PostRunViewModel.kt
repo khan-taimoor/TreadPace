@@ -39,7 +39,7 @@ class PostRunViewModel : ViewModel() {
         }
     }
 
-    var savingRun = MutableLiveData(false)
+    val savingRun = MutableLiveData(false)
 }
 
 
