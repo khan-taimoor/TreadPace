@@ -1,14 +1,17 @@
 package dev.taimoor.treadpace.postRunFragment
 
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.transition.TransitionManager
-import android.transition.Visibility
+import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.transition.addListener
+import androidx.core.transition.doOnEnd
+import androidx.core.transition.doOnStart
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
@@ -17,6 +20,8 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.transition.*
+import androidx.transition.Transition.TransitionListener
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -29,6 +34,7 @@ import com.google.gson.Gson
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import dev.taimoor.treadpace.*
+import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.RunInfo
 import dev.taimoor.treadpace.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
@@ -84,6 +90,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         runEntity = safeArgs.runEntity
 
 
+        //polyline
         val saving = safeArgs.savingRun
 
         Log.i(Util.myTag, "Saving run: $saving")
@@ -108,24 +115,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         this.map = map
 
-
-
-
-
-
-//        Log.i(Util.myTag, "id: ${runEntity.id}")
-
-
-        val gson = Gson()
         this.points = runEntity.points
         this.splits = runEntity.splits
         this.runInfo = runEntity.runInfo
-//        Log.i(Util.myTag, gson.toJson(runInfo))
-//        Log.i(Util.myTag, gson.toJson(splits))
-//        Log.i(Util.myTag, gson.toJson(points))
-
-
-
 
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
         polylineOptions.addAll(points?.toList())
@@ -133,20 +125,14 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-//        viewModel.distance.value = runInfo?.totDistance as Int
-//        viewModel.pace.value = runInfo?.treadmillPace as Double
-//        viewModel.time.value = runInfo?.timeInSeconds as Int
-//        viewModel.timesOnTreadmill.value = runInfo?.numSplitsOnTreadmill as Int
-
-
-
-        //val postRunPackage = safeArgs.postRunPackage
-
         loadLayout(R.layout.post_run_phase_2)
 
-        val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, 50)
-        this.map?.animateCamera(cu)
+//        val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, 200)
+//
+//        //val callba
+//        this.map?.animateCamera(cu )
 
+        this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(points?.last(), 15.0f))
 
         if(splits?.size != null){
 
@@ -208,8 +194,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         var pointsStart = 0
 
-        val splits = this?.splits
-        val points = this?.points
+        val splits = this.splits
+        val points = this.points
 
         for (x in 0 until index){
             pointsStart += (splits?.get(x)?.numTicks as Int)
@@ -261,14 +247,44 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+
     private fun loadLayout(resourceId: Int){
-        TransitionManager.beginDelayedTransition(constraintLayout)
+        Log.i(Util.myTag, "In Load layout")
+
+
+
+
+        val transition = AutoTransition()
+        transition.duration = 300
+        transition.addListener(TranListener(runInfo?.bounds, this.map))
+
+
+        TransitionManager.beginDelayedTransition(constraintLayoutPostRun, transition)
         val constraintSet = ConstraintSet()
         constraintSet.load(this@PostRunFragment.context, resourceId)
-        constraintSet.applyTo(constraintLayout)
-        TransitionManager.beginDelayedTransition(constraintLayout)
-        constraintSet.applyTo(constraintLayout)
+        constraintSet.applyTo(constraintLayoutPostRun)
+        TransitionManager.beginDelayedTransition(constraintLayoutPostRun)
+
+
     }
+
+    class TranListener(val bounds: LatLngBounds?, val map: GoogleMap?) : TransitionListenerAdapter() {
+        override fun onTransitionStart(transition: Transition) {
+
+            //val cu = CameraUpdateFactory
+        }
+
+        override fun onTransitionEnd(transition: Transition) {
+            val cu = CameraUpdateFactory.newLatLngBounds(bounds, 200)
+
+            map?.animateCamera(cu )
+
+            Log.i(Util.myTag, "End")
+
+
+        }
+    }
+
 
     class MyAdapter(private val yData: Array<Float>, private val baseline: Float) : SparkAdapter() {
         override fun getCount(): Int {

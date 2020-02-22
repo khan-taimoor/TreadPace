@@ -48,32 +48,32 @@ class RunViewModel() : ViewModel() {
     fun receiveRunOrder(runOrder: RunOrder){
 
         runOrder.distance?.let {
-            currentDistanceInt.value = it
+            currentDistanceInt.postValue(it)
         }
 
         runOrder.paceTreadmillDouble?.let {
-            paceTreadmillDouble.value = it
+            paceTreadmillDouble.postValue(it)
         }
 
         runOrder.paceCurrentDouble?.let {
-            paceCurrentDouble.value = it
+            paceCurrentDouble.postValue(it)
         }
 
         runOrder.paceSplitDouble?.let {
-            paceSplitDouble.value = it
+            paceSplitDouble.postValue(it)
         }
 
         runOrder.timesOnTreadmill?.let {
-            timesOnTreadmill.value = it
+            timesOnTreadmill.postValue(it)
         }
 
         runOrder.numberSplits?.let {
-            numSplits.value = it
+            numSplits.postValue(it)
         }
 
         runOrder.phase?.let {
             if(currentPhase.value != it){
-                currentPhase.value = it
+                currentPhase.postValue(it)
             }
         }
     }

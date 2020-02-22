@@ -6,9 +6,6 @@ import android.graphics.Color
 import android.location.Location
 import android.os.*
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -19,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
 import android.os.SystemClock
 import android.transition.TransitionManager
-import android.view.MenuItem
+import android.view.*
 import android.widget.Chronometer
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
@@ -341,5 +338,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
         builder?.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
     }
 }
