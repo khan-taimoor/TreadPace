@@ -6,9 +6,6 @@ import android.graphics.Color
 import android.location.Location
 import android.os.*
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -19,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng
 import kotlinx.android.synthetic.main.run_layout.*
 import android.os.SystemClock
 import android.transition.TransitionManager
-import android.view.MenuItem
+import android.view.*
 import android.widget.Chronometer
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
@@ -30,6 +27,8 @@ import com.google.android.gms.maps.model.PolylineOptions
 import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import dev.taimoor.treadpace.room.RunEntity
+import java.time.OffsetDateTime
 import java.util.*
 
 
@@ -269,16 +268,14 @@ class RunFragment : Fragment(), OnMapReadyCallback {
     private fun endAndSaveRun(){
         this.treadmill.finishSplit(total_time.getTimeInSeconds())
 
-        val action = RunFragmentDirections.actionRunFragmentToPostRunFragment()
-            .setBounds(treadmill.bnds.build())
-            .setPoints(treadmill.points.toTypedArray())
-            .setSplits(treadmill.splits.toTypedArray())
-            .setBounds(treadmill.getLatLngBounds())
-            .setRunInfo(treadmill.getRunInfo(total_time.getTimeInSeconds()))
 
-      endService()
+        val runEntity = RunEntity(treadmill.getRunInfo(total_time.getTimeInSeconds()),
+            treadmill.splits.toTypedArray(), treadmill.points.toTypedArray(), OffsetDateTime.now())
 
-        findNavController().navigate(action)
+       // val action = RunFragmentDirections.actionRunFragmentToPostRunFragment().setRunEntity(runEntity)
+        endService()
+
+        findNavController().navigate(RunFragmentDirections.actionRunFragmentToPostRunFragment(runEntity))
     }
 
     private fun endService(){
@@ -310,7 +307,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
             builder?.setPositiveButton("Return") { dialog, id ->
                 Log.i(Util.myTag, "Return to run screen")
-                findNavController().navigate(RunFragmentDirections.actionRunFragmentToHomeRunFragment())
+                findNavController().navigate(R.id.global_go_home)
             }
         }
 
@@ -326,7 +323,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
                 builder?.setNegativeButton("Exit w/o saving"){ dialog, id ->
                     Log.i(Util.myTag, "Exit run without saving")
                     endService()
-                    findNavController().navigate(RunFragmentDirections.actionRunFragmentToHomeRunFragment())
+                    findNavController().navigate(R.id.global_go_home)
 
                 }
             }
@@ -341,5 +338,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
             }
         }
         builder?.show()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
     }
 }

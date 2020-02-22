@@ -14,8 +14,7 @@
 
         <action
             android:id="@+id/action_homeFragment_to_runFragment"
-            app:destination="@id/runFragment"
-            app:launchSingleTop="true">
+            app:destination="@id/runFragment">
             <argument
                 android:name="interval"
                 android:defaultValue="10000"
@@ -33,6 +32,20 @@
                 android:defaultValue="@null"
                 app:argType="com.google.android.gms.location.LocationRequest"
                 app:nullable="true" />
+        </action>
+        <action
+            android:id="@+id/action_homeFragment_to_postRunFragment"
+            app:destination="@id/postRunFragment">
+
+            <argument
+                android:name="runEntity"
+                app:argType="dev.taimoor.treadpace.room.RunEntity" />
+            <argument
+                android:name="savingRun"
+                app:argType="boolean"
+                android:defaultValue="false">
+            </argument>
+
         </action>
 
     </fragment>
@@ -60,41 +73,18 @@
             app:argType="com.google.android.gms.location.LocationRequest"
             app:nullable="true"
             android:defaultValue="@null" />
-
-        <action
-            android:id="@+id/action_runFragment_toHomeRunFragment"
-            app:popUpTo="@id/homeFragment"
-            app:launchSingleTop="true">
-
-        </action>
-
         <action
             android:id="@+id/action_runFragment_to_postRunFragment"
             app:destination="@id/postRunFragment">
 
             <argument
-                android:name="bounds"
-                android:defaultValue="@null"
-                app:argType="com.google.android.gms.maps.model.LatLngBounds"
-                app:nullable="true" />
-
+                android:name="runEntity"
+                app:argType="dev.taimoor.treadpace.room.RunEntity" />
             <argument
-                android:name="points"
-                android:defaultValue="@null"
-                app:argType="com.google.android.gms.maps.model.LatLng[]"
-                app:nullable="true" />
-
-            <argument
-                android:name="splits"
-                android:defaultValue="@null"
-                app:argType="dev.taimoor.treadpace.Split[]"
-                app:nullable="true" />
-
-            <argument
-                android:name="runInfo"
-                android:defaultValue="@null"
-                app:argType="dev.taimoor.treadpace.RunInfo"
-                app:nullable="true" />
+                android:name="savingRun"
+                app:argType="boolean"
+                android:defaultValue="true">
+            </argument>
 
         </action>
 
@@ -106,35 +96,18 @@
         android:label="PostRunFragment"
         tools:layout="@layout/post_run">
         <argument
-            android:name="bounds"
-            app:argType="com.google.android.gms.maps.model.LatLngBounds"
-            app:nullable="true"
-            android:defaultValue="@null"/>
-
+            android:name="runEntity"
+            app:argType="dev.taimoor.treadpace.room.RunEntity" />
         <argument
-            android:name="points"
-            app:argType="com.google.android.gms.maps.model.LatLng[]"
-            app:nullable="true"
-            android:defaultValue="@null" />
-        <argument
-            android:name="splits"
-            app:argType="dev.taimoor.treadpace.Split[]"
-            app:nullable="true"
-            android:defaultValue="@null" />
-        <argument
-            android:name="runInfo"
-            app:argType="dev.taimoor.treadpace.RunInfo"
-            app:nullable="true"
-            android:defaultValue="@null"/>
-        <action
-            android:id="@+id/action_postRunFragment_to_homeFragment"
-            app:launchSingleTop="false"
-            app:popUpTo="@id/homeFragment" />
+            android:name="savingRun"
+            app:argType="boolean"
+            android:defaultValue="true">
+        </argument>
     </fragment>
 
-
-
-
+    <action
+        android:id="@+id/global_go_home"
+        app:popUpTo="@id/homeFragment"/>
 
 
 </navigation>
