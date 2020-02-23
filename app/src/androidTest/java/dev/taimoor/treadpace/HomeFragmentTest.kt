@@ -13,7 +13,6 @@ class HomeFragmentTest{
 
     @Test
     fun testHomeFragment(){
-
         launchFragmentInContainer<HomeFragment>(null, R.style.AppTheme)
     }
 
