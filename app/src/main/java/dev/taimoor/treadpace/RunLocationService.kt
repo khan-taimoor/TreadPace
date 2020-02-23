@@ -135,20 +135,6 @@ class RunLocationService: Service() {
             return this@RunLocationService.points.distance
         }
 
-        fun getLatLngBounds(): LatLngBounds{
-            return this@RunLocationService.points.latLngBounds.build()
-        }
-
-        fun getPoints(): Array<LatLng?>{
-
-            val array = Array<LatLng?>(this@RunLocationService.points.points.size) {null}
-
-            this@RunLocationService.points.points.forEachIndexed { index, latLng ->
-                array[index] = latLng
-            }
-
-            return array
-        }
     }
 
 
@@ -179,7 +165,7 @@ class RunLocationService: Service() {
 
             this.setChanged()
             this.notifyObservers()
-            //Log.i(Util.myTag, "notifying observers\n${points.countObservers()}\n${points.observerSet}}")
+
         }
         fun mostRecentLatLng(): LatLng{
             return points[points.size - 1]

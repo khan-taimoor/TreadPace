@@ -28,6 +28,7 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
 
     override fun addPointToRun(tick: Tick): RunOrder.RunOrderBuilder {
         bnds.include(tick.point)
+        points.add(tick.point)
         val builder = RunOrder.RunOrderBuilder()
 
         currentDistance = tick.distanceInSplit
@@ -149,7 +150,6 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
         }
 
         return array
-
     }
 
     fun finishSplit(endTime: Int) {
