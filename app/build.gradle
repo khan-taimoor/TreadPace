@@ -48,8 +48,14 @@ android {
         exclude 'META-INF/atomicfu.kotlin_module'
     }
 
+    testOptions.unitTests {
+        includeAndroidResources = true
+    }
+
 
 }
+
+
 
 dependencies {
     def nav_version = "2.3.0-alpha01"
