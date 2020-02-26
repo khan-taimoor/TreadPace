@@ -108,6 +108,11 @@
     <action
         android:id="@+id/global_go_home"
         app:popUpTo="@id/homeFragment"/>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="dev.taimoor.treadpace.settings.SettingsFragment"
+        android:label="fragment_settings"
+        tools:layout="@layout/fragment_settings" />
 
 
 </navigation>
