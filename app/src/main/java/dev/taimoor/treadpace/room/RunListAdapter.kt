@@ -1,17 +1,20 @@
 package dev.taimoor.treadpace.room
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.findNavController
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
 import dev.taimoor.treadpace.HomeFragmentDirections
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.databinding.RecyclerviewItemBinding
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 
@@ -57,9 +60,13 @@ class RunListAdapter internal constructor(context: Context) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(run: RunEntity){
+            Log.i(Util.myTag, "Binding a run")
             binding.run = run
             binding.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
             binding.decimalFormatter = DecimalFormat("0.00")
+
+
+            binding.units =PreferenceManager.getDefaultSharedPreferences(this.itemView.context).getString("units",  "")
         }
     }
 }

@@ -15,6 +15,7 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -45,6 +46,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
+
+        val string = getString(R.string.preference_file)
+        val sharedPref = this.activity?.getPreferences(Context.MODE_PRIVATE)
+
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.activity?.applicationContext)
+
+        Log.i(Util.myTag, "VALUE FROM SHAREDMAP: ${sharedPreferences.getString("units", "")}")
+        
+        
         val recyclerView = recyclerview
         val adapter = RunListAdapter(this.context as Context)
         recyclerView.adapter = adapter

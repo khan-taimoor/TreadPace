@@ -98,7 +98,6 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:id="@+id/save_run_button"
-            android:visibility="gone"
             android:src="@drawable/ic_save_white_24dp"
             app:showIfSavingRun="@{viewmodel.savingRun}">
         </com.google.android.material.floatingactionbutton.FloatingActionButton>

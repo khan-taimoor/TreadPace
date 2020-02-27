@@ -8,6 +8,10 @@
             type="dev.taimoor.treadpace.room.RunEntity" />
 
         <variable
+            name="units"
+            type="String" />
+
+        <variable
             name="dateFormatter"
             type="java.time.format.DateTimeFormatter" />
 
@@ -28,7 +32,7 @@
             android:id="@+id/distanceView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{run.runInfo.totDistance.toString()}"
+            android:text="@{run.runInfo.totDistance.toString() + units}"
             tools:text="Distance"
             android:textSize="18sp"
             android:textStyle="bold" />
