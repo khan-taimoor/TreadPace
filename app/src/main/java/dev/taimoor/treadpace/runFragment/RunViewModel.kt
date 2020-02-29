@@ -8,15 +8,16 @@ import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import dev.taimoor.treadpace.RunOrder
 import dev.taimoor.treadpace.Util
+import dev.taimoor.treadpace.settings.UnitSetting
 
-class RunViewModel() : ViewModel() {
+class RunViewModel(val unitSetting: UnitSetting) : ViewModel() {
 
 
     val numSplits = MutableLiveData(2)
 
     val currentDistanceInt = MutableLiveData(0)
     val currentDistance : LiveData<String> = Transformations.map(currentDistanceInt){
-        "$it"
+        "${ "%.2f".format((it*unitSetting.conversion))} ${unitSetting.name}"
     }
 
     val timesOnTreadmill = MutableLiveData(2)
@@ -28,17 +29,17 @@ class RunViewModel() : ViewModel() {
 
     val paceTreadmillDouble = MutableLiveData(0.0)
     val paceTreadmillText: LiveData<String> = Transformations.map(paceTreadmillDouble){
-        "%.2f".format(it)
+        "${ "%.2f".format(it * unitSetting.conversion)} ${unitSetting.name}/hr"
     }
 
     val paceSplitDouble = MutableLiveData(0.0)
     val paceSplitText: LiveData<String> = Transformations.map(paceSplitDouble){
-        "%.2f".format(it)
+        "${ "%.2f".format(it * unitSetting.conversion)}"
     }
 
     val paceCurrentDouble = MutableLiveData(0.0)
     val paceCurrentText: LiveData<String> = Transformations.map(paceCurrentDouble){
-        "%.2f".format(it)
+        "${ "%.2f".format(it * unitSetting.conversion)} ${unitSetting.name}/hr"
     }
 
     val currentPhase = MutableLiveData(Phase.BEFORE_RUN)

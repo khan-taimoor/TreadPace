@@ -22,7 +22,7 @@ class PostRunViewModel(val unitSetting: UnitSetting) : ViewModel() {
 
     val timesOnTreadmill = MutableLiveData(Pair(0,2))
     val timesOnTreadmillText : LiveData<String> = Transformations.map(timesOnTreadmill){
-        "${it.first} / ${it.second}"
+        "${it.first}/${it.second}"
     }
 
     val distance = MutableLiveData(0)
@@ -32,7 +32,7 @@ class PostRunViewModel(val unitSetting: UnitSetting) : ViewModel() {
 
     val pace = MutableLiveData(0.0)
     val paceText : LiveData<String> = Transformations.map(pace){
-        "${ "%.2f".format(it * unitSetting.conversion)} ${unitSetting.name}"
+        "${ "%.2f".format(it * unitSetting.conversion)} ${unitSetting.name}/hr"
     }
 
     val time = MutableLiveData(0)
@@ -46,7 +46,7 @@ class PostRunViewModel(val unitSetting: UnitSetting) : ViewModel() {
             "Slide to show split info"
         }
         else{
-            "Split: ${it.first} Pace: ${"%.2f".format(it.second * unitSetting.conversion)} ${unitSetting.name}"
+            "Split: ${it.first} Pace: ${"%.2f".format(it.second * unitSetting.conversion)} ${unitSetting.name}/hr"
         }
     }
 

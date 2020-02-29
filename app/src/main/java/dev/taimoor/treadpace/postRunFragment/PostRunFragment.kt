@@ -74,7 +74,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         val unit = PreferenceManager.getDefaultSharedPreferences(this.context as Context).getString("units", "mi").toString()
 
-        viewModel = ViewModelProviders.of(this.activity as FragmentActivity,
+        viewModel = ViewModelProviders.of(this,
         UnitSettingViewModelFactory(UnitSetting.valueOf(unit))).get(PostRunViewModel::class.java)
 
     }
