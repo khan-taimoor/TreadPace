@@ -34,7 +34,7 @@ class RunViewModel(val unitSetting: UnitSetting) : ViewModel() {
 
     val paceSplitDouble = MutableLiveData(0.0)
     val paceSplitText: LiveData<String> = Transformations.map(paceSplitDouble){
-        "${ "%.2f".format(it * unitSetting.conversion)}"
+        "${ "%.2f".format(it * unitSetting.conversion)} ${unitSetting.name}/hr"
     }
 
     val paceCurrentDouble = MutableLiveData(0.0)
