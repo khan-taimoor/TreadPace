@@ -16,7 +16,7 @@ import dev.taimoor.treadpace.Util
 import kotlinx.android.synthetic.main.fragment_settings.*
 
 class SettingsFragment : PreferenceFragmentCompat() {
-    val entries = arrayOf("HI", "MOM")
+    val entries = arrayOf("Miles", "Kilometers")
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
 
@@ -35,10 +35,11 @@ class SettingsFragment : PreferenceFragmentCompat() {
         val unitsDialog = ListPreference(context)
         unitsDialog.key = "units"
         unitsDialog.title = "Select desired units"
-        unitsDialog.setDefaultValue("miles")
+        unitsDialog.setDefaultValue("Miles")
 
         unitsDialog.entries = entries
-        unitsDialog.entryValues = arrayOf("miles", "km")
+        unitsDialog.entryValues = arrayOf("mi", "km")
+
         runSettingsCategory.addPreference(unitsDialog)
 
 

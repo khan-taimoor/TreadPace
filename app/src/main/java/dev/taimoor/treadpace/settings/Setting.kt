@@ -1,4 +1,6 @@
 package dev.taimoor.treadpace.settings
 
-class Setting(val setting: String, val settingDescription: String, val action: Runnable) {
+enum class UnitSetting(val conversion: Double) {
+    mi(0.000621371),
+    km(0.001)
 }

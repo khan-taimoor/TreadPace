@@ -14,6 +14,7 @@ import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.databinding.RecyclerviewItemBinding
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import dev.taimoor.treadpace.settings.UnitSetting
 import kotlinx.coroutines.withContext
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
@@ -60,13 +61,13 @@ class RunListAdapter internal constructor(context: Context) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(run: RunEntity){
-            Log.i(Util.myTag, "Binding a run")
             binding.run = run
             binding.dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE
             binding.decimalFormatter = DecimalFormat("0.00")
 
-
-            binding.units =PreferenceManager.getDefaultSharedPreferences(this.itemView.context).getString("units",  "")
+            val pref = PreferenceManager.getDefaultSharedPreferences(this.itemView.context).getString("units",  "mi")
+            val unitSetting : UnitSetting = UnitSetting.valueOf(pref as String)
+            binding.unit = unitSetting
         }
     }
 }

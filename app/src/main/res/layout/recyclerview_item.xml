@@ -8,8 +8,8 @@
             type="dev.taimoor.treadpace.room.RunEntity" />
 
         <variable
-            name="units"
-            type="String" />
+            name="unit"
+            type="dev.taimoor.treadpace.settings.UnitSetting" />
 
         <variable
             name="dateFormatter"
@@ -32,7 +32,7 @@
             android:id="@+id/distanceView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{run.runInfo.totDistance.toString() + units}"
+            android:text="@{decimalFormatter.format((run.runInfo.totDistance.doubleValue() * unit.conversion)) + &quot; &quot; + unit.name()}"
             tools:text="Distance"
             android:textSize="18sp"
             android:textStyle="bold" />
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:text="@{decimalFormatter.format(run.runInfo.treadmillPace)}"
+            android:text="@{decimalFormatter.format(run.runInfo.treadmillPace * unit.conversion)}"
             tools:text="% Pace"
             android:layout_below="@id/distanceView" />
 
@@ -54,7 +54,7 @@
             android:layout_alignParentEnd="true"
             android:textSize="18sp"
             android:textStyle="bold"
-            android:text="@{Integer.toString(run.runInfo.timeInSeconds)}"
+            android:text="@{run.runInfo.durationAsString()}"
             tools:text="Time of Run" />
 
         <TextView

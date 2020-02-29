@@ -51,6 +51,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
     private val viewModel : RunViewModel by viewModels()
+
     private lateinit var treadmill: TreadmillRun
     lateinit var binding: RunLayoutBinding
 
