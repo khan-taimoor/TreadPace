@@ -99,7 +99,7 @@
             android:layout_marginBottom="16dp"
             android:id="@+id/save_run_button"
             android:src="@drawable/ic_save_white_24dp"
-            app:showIfSavingRun="@{viewmodel.savingRun}">
+            app:showIfSavingRun="@{viewmodel.savingRun.booleanValue()}">
         </com.google.android.material.floatingactionbutton.FloatingActionButton>
 
         <androidx.constraintlayout.widget.Guideline

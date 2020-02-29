@@ -90,18 +90,11 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         runEntity = safeArgs.runEntity
 
-
-        //polyline
-        val saving = safeArgs.savingRun
-
-        Log.i(Util.myTag, "Saving run: $saving")
-        viewModel.savingRun.postValue(safeArgs.savingRun)
-
         viewModel.timesOnTreadmill.postValue(Pair(runEntity.runInfo.numSplitsOnTreadmill.toInt(),
             runEntity.runInfo.numSplits.toInt()))
         viewModel.distance.postValue(runEntity.runInfo.totDistance.toInt())
         viewModel.pace.postValue(runEntity.runInfo.treadmillPace)
-        viewModel.time.postValue(runEntity.runInfo.timeInSeconds.toInt())
+        viewModel.time.postValue(runEntity.runInfo.timeInSeconds)
 
 
         this.binding = DataBindingUtil.inflate(inflater,
@@ -267,6 +260,10 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         constraintSet.applyTo(constraintLayoutPostRun)
         TransitionManager.beginDelayedTransition(constraintLayoutPostRun)
 
+        val saving = safeArgs.savingRun
+
+
+        viewModel.savingRun.postValue(saving)
 
     }
 
@@ -343,6 +340,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
     Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
-    view.visibility = if (savingRun) View.VISIBLE else View.GONE
+    if(!savingRun){
+        view.visibility = View.GONE
+    }
+    //view.visibility = if (savingRun) View.VISIBLE else View.GONE
 }
 
