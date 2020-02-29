@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="14sp"
-            android:text="@{decimalFormatter.format(run.runInfo.treadmillPace * unit.conversion)}"
+            android:text="@{decimalFormatter.format(run.runInfo.treadmillPace * unit.conversion) + &quot; &quot; + unit.name() + &quot;/hr&quot;}"
             tools:text="% Pace"
             android:layout_below="@id/distanceView" />
 

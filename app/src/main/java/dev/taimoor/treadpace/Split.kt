@@ -11,7 +11,7 @@ data class RunInfo(val treadmillPace: Double, val timeInSeconds: Int,
                    val numSplitsOnTreadmill: Number, val bounds: LatLngBounds) : Parcelable{
 
     fun durationAsString(): String{
-        return (this.timeInSeconds/60).toString() + ":" + (this.timeInSeconds%60).toString()
+        return (this.timeInSeconds/60).toString() + ":" + "%02d".format(this.timeInSeconds%60)
     }
 }
 

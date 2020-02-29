@@ -37,7 +37,7 @@ class PostRunViewModel(val unitSetting: UnitSetting) : ViewModel() {
 
     val time = MutableLiveData(0)
     val timeText : LiveData<String> = Transformations.map(time){
-        "${it/60}:${it%60}"
+        "${it/60}:${"%02d".format(it%60)}"
     }
 
     val split = MutableLiveData(Pair(-1, 0.0))
