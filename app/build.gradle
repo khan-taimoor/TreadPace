@@ -137,5 +137,6 @@ dependencies {
     kapt "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.archLifecycleVersion"
 
+    implementation 'androidx.recyclerview:recyclerview:1.1.0-beta02'
 
 }
