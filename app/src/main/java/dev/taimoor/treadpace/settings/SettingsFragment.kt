@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.ArrayAdapter
+import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 
 
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.NavigationUI
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.preference.*
 import dev.taimoor.treadpace.R
@@ -20,6 +22,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
 
+        setHasOptionsMenu(true)
         val context = preferenceManager.context
         val screen = preferenceManager.createPreferenceScreen(context)
 
@@ -41,6 +44,17 @@ class SettingsFragment : PreferenceFragmentCompat() {
         unitsDialog.entryValues = arrayOf("mi", "km")
 
         runSettingsCategory.addPreference(unitsDialog)
+
+//        val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
+//            findNavController().navigate(R.id.global_go_home)
+//            Log.i(Util.myTag, "back pressed ye heard")
+//        }
+//        callback.isEnabled = true
+
+
+
+
+        this.activity?.actionBar?.setDisplayHomeAsUpEnabled(true)
 
 
 
@@ -73,9 +87,16 @@ class SettingsFragment : PreferenceFragmentCompat() {
 
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        super.onCreateOptionsMenu(menu, inflater)
         menu.clear()
     }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(item.itemId == android.R.id.home){
+            findNavController().navigate(R.id.global_go_home)
+        }
+        return true
+    }
+
 
 
 }

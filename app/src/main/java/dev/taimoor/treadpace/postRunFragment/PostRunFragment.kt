@@ -310,9 +310,6 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-
-
         if(item.itemId == android.R.id.home){
             findNavController().navigate(R.id.global_go_home)
         }

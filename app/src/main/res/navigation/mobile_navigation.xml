@@ -83,7 +83,7 @@
             <argument
                 android:name="savingRun"
                 android:defaultValue="true"
-                app:argType="boolean"></argument>
+                app:argType="boolean" />
 
         </action>
 
@@ -100,7 +100,7 @@
         <argument
             android:name="savingRun"
             android:defaultValue="true"
-            app:argType="boolean"></argument>
+            app:argType="boolean" />
     </fragment>
 
     <action
