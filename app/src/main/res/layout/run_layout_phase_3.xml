@@ -54,22 +54,22 @@
         android:id="@+id/pace_split_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="4dp"
-        tools:text="Split View"
-        app:layout_constraintEnd_toStartOf="@id/border_vertical"
+        android:layout_marginEnd="16dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal"
-        android:visibility="visible"/>
+        app:layout_constraintEnd_toStartOf="@id/border_vertical"
+        tools:text="Split View" />
 
 <!--Margin Layout is 4 in the final-->
     <TextView
         android:id="@+id/pace_current_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Current view"
-        android:layout_marginStart="4dp"
-        app:layout_constraintStart_toStartOf="@id/border_vertical"
+        android:layout_marginStart="16dp"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="@id/pace_separator_horizontal"
-        android:visibility="visible"/>
+        app:layout_constraintStart_toStartOf="@id/border_vertical"
+        tools:text="Current view" />
 
     <TextView
         android:id="@+id/time_treadmill"

@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
@@ -16,6 +14,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.ui.onNavDestinationSelected
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
@@ -46,6 +46,18 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
+
+
+        val string = getString(R.string.preference_file)
+        val sharedPref = this.activity?.getPreferences(Context.MODE_PRIVATE)
+
+
+        val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.activity?.applicationContext)
+
+        Log.i(Util.myTag, "VALUE FROM SHAREDMAP: ${sharedPreferences.getString("units", "")}")
+        
+        
         val recyclerView = recyclerview
         val adapter = RunListAdapter(this.context as Context)
         recyclerView.adapter = adapter
@@ -135,5 +147,16 @@ class HomeFragment : Fragment() {
     }
 
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return item.onNavDestinationSelected(findNavController())
+                || super.onOptionsItemSelected(item)
+    }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
+
+        inflater.inflate(R.menu.menu_main, menu)
+
+    }
 }

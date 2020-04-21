@@ -9,8 +9,8 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="dev.taimoor.treadpace.HomeFragment"
-        android:label="HomeFragment"
-        tools:layout="@layout/home_layout" >
+        android:label="TreadPace"
+        tools:layout="@layout/home_layout">
 
         <action
             android:id="@+id/action_homeFragment_to_runFragment"
@@ -42,8 +42,8 @@
                 app:argType="dev.taimoor.treadpace.room.RunEntity" />
             <argument
                 android:name="savingRun"
-                app:argType="boolean"
-                android:defaultValue="false">
+                android:defaultValue="false"
+                app:argType="boolean">
             </argument>
 
         </action>
@@ -53,26 +53,26 @@
     <fragment
         android:id="@+id/runFragment"
         android:name="dev.taimoor.treadpace.runFragment.RunFragment"
-        android:label="RunFragment"
+        android:label="Run"
         tools:layout="@layout/run_layout">
 
         <argument
             android:name="interval"
-            app:argType="integer"
-            android:defaultValue="10000" />
+            android:defaultValue="10000"
+            app:argType="integer" />
         <argument
             android:name="fastestInterval"
-            app:argType="integer"
-            android:defaultValue="5000" />
+            android:defaultValue="5000"
+            app:argType="integer" />
         <argument
             android:name="priority"
-            app:argType="integer"
-            android:defaultValue="100" />
+            android:defaultValue="100"
+            app:argType="integer" />
         <argument
             android:name="locationRequest"
+            android:defaultValue="@null"
             app:argType="com.google.android.gms.location.LocationRequest"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <action
             android:id="@+id/action_runFragment_to_postRunFragment"
             app:destination="@id/postRunFragment">
@@ -82,9 +82,8 @@
                 app:argType="dev.taimoor.treadpace.room.RunEntity" />
             <argument
                 android:name="savingRun"
-                app:argType="boolean"
-                android:defaultValue="true">
-            </argument>
+                android:defaultValue="true"
+                app:argType="boolean" />
 
         </action>
 
@@ -93,21 +92,25 @@
     <fragment
         android:id="@+id/postRunFragment"
         android:name="dev.taimoor.treadpace.postRunFragment.PostRunFragment"
-        android:label="PostRunFragment"
+        android:label="Review Run"
         tools:layout="@layout/post_run">
         <argument
             android:name="runEntity"
             app:argType="dev.taimoor.treadpace.room.RunEntity" />
         <argument
             android:name="savingRun"
-            app:argType="boolean"
-            android:defaultValue="true">
-        </argument>
+            android:defaultValue="true"
+            app:argType="boolean" />
     </fragment>
 
     <action
         android:id="@+id/global_go_home"
         app:popUpTo="@id/homeFragment"/>
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="dev.taimoor.treadpace.settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings" />
 
 
 </navigation>
