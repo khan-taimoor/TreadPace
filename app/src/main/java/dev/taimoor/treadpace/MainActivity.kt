@@ -42,7 +42,8 @@ class MainActivity : AppCompatActivity() {
         val toolbar = findViewById<Toolbar>(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val host: NavHostFragment = supportFragmentManager.findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment
+        val host: NavHostFragment =
+            supportFragmentManager.findFragmentById(R.id.my_nav_host_fragment) as NavHostFragment
 
         val navController = host.navController
 
@@ -60,8 +61,10 @@ class MainActivity : AppCompatActivity() {
                 Integer.toString(destination.id)
             }
 
-            Toast.makeText(this@MainActivity, "Navigated to $dest",
-                Toast.LENGTH_SHORT).show()
+//            Toast.makeText(
+//                this@MainActivity, "Navigated to $dest",
+//                Toast.LENGTH_SHORT
+//            ).show()
             Log.d("NavigationActivity", "Navigated to $dest")
         }
     }
@@ -85,55 +88,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupActionBar(navController: NavController,
-                               appBarConfig: AppBarConfiguration) {
-       // This allows NavigationUI to decide what label to show in the action bar
-       // By using appBarConfig, it will also determine whether to
-       // show the up arrow or drawer menu icon
+    private fun setupActionBar(
+        navController: NavController,
+        appBarConfig: AppBarConfiguration
+    ) {
+        // This allows NavigationUI to decide what label to show in the action bar
+        // By using appBarConfig, it will also determine whether to
+        // show the up arrow or drawer menu icon
         setupActionBarWithNavController(navController, appBarConfig)
     }
-
-/*
-
-    //TODO: put in if I decide to go with the bottom nav and split screen.
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val retValue = super.onCreateOptionsMenu(menu)
-        val navigationView = findViewById<NavigationView>(R.id.nav_view)
-        // The NavigationView already has these same navigation items, so we only add
-        // navigation items to the menu here if there isn't a NavigationView
-        if (navigationView == null) {
-            menuInflater.inflate(R.menu.menu_main, menu)
-
-            return true
-        }
-        return retValue
-    }
-
-*/
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.menu_main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        return when (item.itemId) {
-            R.id.action_settings -> true
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-//        // Allows NavigationUI to support proper up navigation or the drawer layout
-//        // drawer menu, depending on the situation
-        return findNavController(R.id.my_nav_host_fragment).navigateUp(appBarConfiguration)
-//    }
-        // TODO END STEP 9.7
-    }
-
-
 }
+

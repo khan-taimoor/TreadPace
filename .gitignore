@@ -100,3 +100,10 @@ lint/tmp/
 app/src/main/res/values/api-keys.xml
 
 app/src/test
+
+
+#IntelliJ files
+.idea/codeStyles/Project.xml
+./idea/*.*
+
+app/src/main/res/values/GoogleMapsApiKey.xml

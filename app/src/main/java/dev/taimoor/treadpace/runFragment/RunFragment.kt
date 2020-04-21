@@ -21,13 +21,19 @@ import android.widget.Chronometer
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.preference.PreferenceManager
 import com.google.android.gms.maps.model.PolylineOptions
 import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
+import dev.taimoor.treadpace.postRunFragment.UnitSettingViewModelFactory
 import dev.taimoor.treadpace.room.RunEntity
+import dev.taimoor.treadpace.settings.UnitSetting
 import java.time.OffsetDateTime
 import java.util.*
 
@@ -50,7 +56,8 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
 
 
-    private val viewModel : RunViewModel by viewModels()
+    private lateinit var viewModel : RunViewModel
+
     private lateinit var treadmill: TreadmillRun
     lateinit var binding: RunLayoutBinding
 
@@ -88,8 +95,9 @@ class RunFragment : Fragment(), OnMapReadyCallback {
         locationRequest = safeArgs.locationRequest
         Log.i(Util.myTag, "in on create view")
 
-
-
+        val unit = PreferenceManager.getDefaultSharedPreferences(this.context as Context).getString("units", "mi").toString()
+        viewModel = ViewModelProviders.of(this,
+            UnitSettingViewModelFactory(UnitSetting.valueOf(unit))).get(RunViewModel::class.java)
 
         this.binding = DataBindingUtil.inflate(inflater,
             R.layout.run_layout, container, false)

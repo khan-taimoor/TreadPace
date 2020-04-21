@@ -4,24 +4,20 @@ package dev.taimoor.treadpace.postRunFragment
 import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
-import android.util.AttributeSet
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.transition.addListener
-import androidx.core.transition.doOnEnd
-import androidx.core.transition.doOnStart
-import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import androidx.preference.PreferenceManager
 import androidx.transition.*
-import androidx.transition.Transition.TransitionListener
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -30,7 +26,6 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import com.google.android.gms.maps.model.Polyline
 import com.google.android.gms.maps.model.PolylineOptions
-import com.google.gson.Gson
 import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import dev.taimoor.treadpace.*
@@ -40,8 +35,8 @@ import dev.taimoor.treadpace.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
 import dev.taimoor.treadpace.room.HomeViewModel
 import dev.taimoor.treadpace.room.RunEntity
+import dev.taimoor.treadpace.settings.UnitSetting
 import kotlinx.android.synthetic.main.post_run.*
-import kotlinx.android.synthetic.main.run_layout.constraintLayout
 import kotlinx.android.synthetic.main.run_layout.map_view
 
 
@@ -64,7 +59,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     lateinit var runEntity: RunEntity
 
 
-    private val viewModel : PostRunViewModel by viewModels()
+    private lateinit var viewModel : PostRunViewModel
     lateinit var binding: PostRunBinding
 
 
@@ -75,6 +70,12 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             findNavController().navigate(R.id.global_go_home)
         }
         callback.isEnabled = true
+
+
+        val unit = PreferenceManager.getDefaultSharedPreferences(this.context as Context).getString("units", "mi").toString()
+
+        viewModel = ViewModelProviders.of(this,
+        UnitSettingViewModelFactory(UnitSetting.valueOf(unit))).get(PostRunViewModel::class.java)
 
     }
 
@@ -89,18 +90,11 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
         runEntity = safeArgs.runEntity
 
-
-        //polyline
-        val saving = safeArgs.savingRun
-
-        Log.i(Util.myTag, "Saving run: $saving")
-        viewModel.savingRun.postValue(safeArgs.savingRun)
-
         viewModel.timesOnTreadmill.postValue(Pair(runEntity.runInfo.numSplitsOnTreadmill.toInt(),
             runEntity.runInfo.numSplits.toInt()))
         viewModel.distance.postValue(runEntity.runInfo.totDistance.toInt())
         viewModel.pace.postValue(runEntity.runInfo.treadmillPace)
-        viewModel.time.postValue(runEntity.runInfo.timeInSeconds.toInt())
+        viewModel.time.postValue(runEntity.runInfo.timeInSeconds)
 
 
         this.binding = DataBindingUtil.inflate(inflater,
@@ -144,7 +138,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             sparkView.adapter =
                 MyAdapter(
                     floatArray,
-                    runInfo?.treadmillPace?.toFloat() as Float
+                    ((this.splits!![0].getPace() + this.splits!![1].getPace()) / 2).toFloat()
+                    //runInfo?.treadmillPace?.toFloat() as Float
                 )
 
             sparkView.isScrubEnabled = true
@@ -265,6 +260,10 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         constraintSet.applyTo(constraintLayoutPostRun)
         TransitionManager.beginDelayedTransition(constraintLayoutPostRun)
 
+        val saving = safeArgs.savingRun
+
+
+        viewModel.savingRun.postValue(saving)
 
     }
 
@@ -311,9 +310,6 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
-
-
         if(item.itemId == android.R.id.home){
             findNavController().navigate(R.id.global_go_home)
         }
@@ -341,6 +337,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
     Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
-    view.visibility = if (savingRun) View.VISIBLE else View.GONE
+    if(!savingRun){
+        view.visibility = View.GONE
+    }
+    //view.visibility = if (savingRun) View.VISIBLE else View.GONE
 }
 
