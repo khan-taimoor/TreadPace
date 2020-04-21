@@ -88,8 +88,11 @@ dependencies {
 
 
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
+
+    // REPEATED DEPENDENCY
     androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
+    // REPEATED DEPENDENCY
     testImplementation "junit:junit:$junitVersion"
 
     // AndroidX Test - JVM testing
@@ -110,8 +113,14 @@ dependencies {
     androidTestImplementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
 
+    // REPEATED
     androidTestImplementation "junit:junit:$junitVersion"
+
+
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
+
+
+    // REPEATED
     implementation "androidx.fragment:fragment-testing:$fragmentVersion"
     implementation "androidx.test:core:$androidXTestCoreVersion"
 
@@ -130,6 +139,7 @@ dependencies {
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
 
+    // REPEATED
     implementation "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
 
