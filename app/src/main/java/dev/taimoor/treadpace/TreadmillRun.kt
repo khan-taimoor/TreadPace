@@ -133,7 +133,7 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
 
     private fun paceDeltaTest(split: Split, builder: RunOrder.RunOrderBuilder){
         val paceDifference = kotlin.math.abs(split.getPace() - averagePace())
-        Log.i(Util.myTag, "pace difference: $paceDifference")
+        //Log.i(Util.myTag, "pace difference: $paceDifference")
 
         if(paceDifference < .5){
             split.onTreadmill = true
