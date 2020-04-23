@@ -99,7 +99,6 @@ lint/tmp/
 # lint/reports/
 app/src/main/res/values/api-keys.xml
 
-app/src/test
 
 
 #IntelliJ files
