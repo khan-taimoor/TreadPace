@@ -11,7 +11,6 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
@@ -30,8 +29,8 @@ import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
-import dev.taimoor.treadpace.RunInfo
-import dev.taimoor.treadpace.Split
+import dev.taimoor.treadpace.data.RunInfo
+import dev.taimoor.treadpace.data.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
 import dev.taimoor.treadpace.room.HomeViewModel
 import dev.taimoor.treadpace.room.RunEntity

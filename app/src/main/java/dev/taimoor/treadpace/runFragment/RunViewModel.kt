@@ -1,13 +1,11 @@
 package dev.taimoor.treadpace.runFragment
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
-import dev.taimoor.treadpace.RunOrder
-import dev.taimoor.treadpace.Util
+import dev.taimoor.treadpace.data.RunOrder
 import dev.taimoor.treadpace.settings.UnitSetting
 
 class RunViewModel(val unitSetting: UnitSetting) : ViewModel() {

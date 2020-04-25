@@ -1,12 +1,6 @@
 package dev.taimoor.treadpace.postRunFragment
 
-import android.content.Context
-import android.util.Log
 import androidx.lifecycle.*
-import androidx.preference.PreferenceManager
-import androidx.test.core.app.ApplicationProvider
-import dev.taimoor.treadpace.Split
-import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.settings.UnitSetting
 
 

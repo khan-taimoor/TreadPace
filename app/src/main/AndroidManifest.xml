@@ -40,7 +40,7 @@
         </activity>
 
         <service
-            android:name=".RunLocationService"
+            android:name=".data.RunLocationService"
             android:foregroundServiceType="location">
 
         </service>

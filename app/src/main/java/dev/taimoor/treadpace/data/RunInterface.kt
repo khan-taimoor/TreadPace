@@ -1,4 +1,4 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.data
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds

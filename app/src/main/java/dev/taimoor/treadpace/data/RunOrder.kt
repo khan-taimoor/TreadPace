@@ -1,4 +1,4 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.data
 
 import dev.taimoor.treadpace.runFragment.Phase
 

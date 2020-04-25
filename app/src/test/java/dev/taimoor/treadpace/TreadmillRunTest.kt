@@ -2,14 +2,13 @@ package dev.taimoor.treadpace
 
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.mock
+import dev.taimoor.treadpace.data.TreadmillRun
 import dev.taimoor.treadpace.runFragment.Phase
 import dev.taimoor.treadpace.runFragment.RunViewModel
 import dev.taimoor.treadpace.runFragment.Tick
-import org.junit.After
 import org.junit.Test
 
 import org.junit.Assert.*
-import org.junit.Before
 
 class TreadmillRunTest {
 

@@ -1,4 +1,4 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.homeFragment
 
 import android.content.Context
 import android.content.IntentSender
@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
 import androidx.navigation.navOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
@@ -20,8 +19,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
+import dev.taimoor.treadpace.R
+import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.room.HomeViewModel
-import dev.taimoor.treadpace.room.RunEntity
 import dev.taimoor.treadpace.room.RunListAdapter
 import kotlinx.android.synthetic.main.home_layout.*
 
@@ -83,8 +84,7 @@ class HomeFragment : Fragment() {
         }
 
         fab?.setOnClickListener {
-            val action = HomeFragmentDirections
-                .actionHomeFragmentToRunFragment()
+            val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()
                 .setFastestInterval(10000)
                 .setInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
