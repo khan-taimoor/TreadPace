@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
@@ -49,6 +50,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     private var splits : Array<Split>? = null
     private var runInfo: RunInfo? = null
     private var polyline: Polyline? = null
+    private var savingRun : Boolean ? = null
 
     private var currentIndexSplit : Int? = null
 
@@ -66,7 +68,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
 
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-            findNavController().navigate(R.id.global_go_home)
+            exitPrompt()
         }
         callback.isEnabled = true
 
@@ -111,6 +113,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         this.points = runEntity.points
         this.splits = runEntity.splits
         this.runInfo = runEntity.runInfo
+        this.savingRun = safeArgs.savingRun
 
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
         polylineOptions.addAll(points?.toList())
@@ -310,7 +313,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == android.R.id.home){
-            findNavController().navigate(R.id.global_go_home)
+            exitPrompt()
         }
         else if(item.itemId == R.id.delete){
             Log.i(Util.myTag, "Delete being pressed")
@@ -332,6 +335,31 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             inflater.inflate(R.menu.post_run_menu, menu)
         }
     }
+
+    private fun exitPrompt(){
+
+        if (this.savingRun!!) {
+            val builder: AlertDialog.Builder? = this.activity?.let {
+                AlertDialog.Builder(it)
+            }
+
+            builder.apply {
+                this?.setTitle("Exit without saving?")
+                this?.setPositiveButton("Exit") { dialog, id ->
+                    findNavController().navigate(R.id.global_go_home)
+                }
+                this?.setNegativeButton("Stay") { dialog, id ->
+                    //do nothing
+                }
+            }
+
+
+            builder?.show()
+        } else {
+            findNavController().navigate(R.id.global_go_home)
+        }
+    }
+
 }
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
