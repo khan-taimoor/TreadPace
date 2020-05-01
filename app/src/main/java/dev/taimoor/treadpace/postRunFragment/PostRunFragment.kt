@@ -116,6 +116,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         this.runInfo = runEntity.runInfo
         this.savingRun = safeArgs.savingRun
 
+        viewModel.savingRun.postValue(this.savingRun)
+
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
         polylineOptions.addAll(points?.toList())
         this.map?.addPolyline(polylineOptions)
@@ -365,9 +367,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
     Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
-    if(!savingRun){
-        view.visibility = View.GONE
-    }
-    //view.visibility = if (savingRun) View.VISIBLE else View.GONE
+//    if(!savingRun){
+//        view.visibility = View.GONE
+//    }
+    view.visibility = if (savingRun) View.VISIBLE else View.GONE
 }
 
