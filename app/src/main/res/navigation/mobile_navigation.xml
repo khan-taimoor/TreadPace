@@ -93,7 +93,7 @@
         android:id="@+id/postRunFragment"
         android:name="dev.taimoor.treadpace.postRunFragment.PostRunFragment"
         android:label="Review Run"
-        tools:layout="@layout/post_run">
+        tools:layout="@layout/post_run_phase_2">
         <argument
             android:name="runEntity"
             app:argType="dev.taimoor.treadpace.room.RunEntity" />

@@ -33,6 +33,7 @@ import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.data.RunInfo
 import dev.taimoor.treadpace.data.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
+import dev.taimoor.treadpace.databinding.PostRunPhase2BindingImpl
 import dev.taimoor.treadpace.room.HomeViewModel
 import dev.taimoor.treadpace.room.RunEntity
 import dev.taimoor.treadpace.settings.UnitSetting
@@ -61,7 +62,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
     private lateinit var viewModel : PostRunViewModel
-    lateinit var binding: PostRunBinding
+    lateinit var binding: PostRunPhase2BindingImpl
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -99,7 +100,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
         this.binding = DataBindingUtil.inflate(inflater,
-            R.layout.post_run, container, false)
+            R.layout.post_run_phase_2, container, false)
         binding.viewmodel = this.viewModel
         binding.lifecycleOwner = this@PostRunFragment
 
@@ -118,17 +119,17 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
         polylineOptions.addAll(points?.toList())
         this.map?.addPolyline(polylineOptions)
+        this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(points?.last(), 15.0f))
 
 
 
-        loadLayout(R.layout.post_run_phase_2)
+        //loadLayout(R.layout.post_run_phase_2)
 
 //        val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, 200)
 //
 //        //val callba
 //        this.map?.animateCamera(cu )
 
-        this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(points?.last(), 15.0f))
 
         if(splits?.size != null){
 
@@ -252,7 +253,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
         val transition = AutoTransition()
-        transition.duration = 300
+        transition.duration = 500
         transition.addListener(TranListener(runInfo?.bounds, this.map))
 
 
@@ -278,7 +279,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         override fun onTransitionEnd(transition: Transition) {
             val cu = CameraUpdateFactory.newLatLngBounds(bounds, 200)
 
-            map?.animateCamera(cu )
+            map?.animateCamera(cu)
 
             Log.i(Util.myTag, "End")
 
