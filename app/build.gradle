@@ -95,14 +95,9 @@ dependencies {
     // REPEATED DEPENDENCY
     testImplementation "junit:junit:$junitVersion"
 
-    // AndroidX Test - JVM testing
-    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
 
-    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
 
-    testImplementation "org.robolectric:robolectric:$robolectricVersion"
 
-    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
     testImplementation 'org.mockito:mockito-inline:2.13.0'
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
@@ -148,5 +143,12 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.archLifecycleVersion"
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0-beta02'
+
+    // BY ME
+    testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
+    testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
+    testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    testImplementation "org.robolectric:robolectric:$robolectricVersion"
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
 
 }

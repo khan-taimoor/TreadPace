@@ -1,18 +1,25 @@
 package dev.taimoor.treadpace
 
+import android.os.Build
+import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.google.android.gms.maps.model.LatLng
 import com.nhaarman.mockitokotlin2.mock
 import dev.taimoor.treadpace.data.TreadmillRun
 import dev.taimoor.treadpace.runFragment.Phase
 import dev.taimoor.treadpace.runFragment.RunViewModel
 import dev.taimoor.treadpace.runFragment.Tick
+import dev.taimoor.treadpace.settings.UnitSetting
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.junit.runner.RunWith
+import org.robolectric.annotation.Config
 
+@Config(sdk = [Build.VERSION_CODES.O_MR1])
+@RunWith(AndroidJUnit4::class)
 class TreadmillRunTest {
 
-    val runViewModel = mock<RunViewModel>()
+    val runViewModel = RunViewModel(UnitSetting.mi)
     val testRun = TreadmillRun(runViewModel)
     val latLngPoint = LatLng(0.0, 0.0)
 
