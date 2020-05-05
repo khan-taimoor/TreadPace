@@ -14,7 +14,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     init {
         val runDao = RunRoomDatabase.getDatabase(application, viewModelScope).runDao()
         repository = RunRepository(runDao)
-        allRuns = repository.allRuns
+        allRuns = repository.getRuns()
+
     }
 
     fun insert(run: RunEntity) = viewModelScope.launch {
