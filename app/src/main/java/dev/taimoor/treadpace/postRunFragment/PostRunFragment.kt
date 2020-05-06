@@ -12,8 +12,10 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -34,8 +36,7 @@ import dev.taimoor.treadpace.data.RunInfo
 import dev.taimoor.treadpace.data.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
 import dev.taimoor.treadpace.databinding.PostRunPhase2BindingImpl
-import dev.taimoor.treadpace.room.HomeViewModel
-import dev.taimoor.treadpace.room.RunEntity
+import dev.taimoor.treadpace.room.*
 import dev.taimoor.treadpace.settings.UnitSetting
 import kotlinx.android.synthetic.main.post_run.*
 import kotlinx.android.synthetic.main.run_layout.map_view
@@ -169,7 +170,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
             save_run_button.setOnClickListener {
-                val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+                val homeViewModel by viewModels<HomeViewModel>{
+                    HomeViewModelFactory(RunRepository(RunRoomDatabase.getDatabase(this.requireActivity().application, lifecycleScope).runDao()))
+                }
                 homeViewModel.insert(runEntity)
                 findNavController().navigate(R.id.global_go_home)
 
@@ -320,7 +323,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         }
         else if(item.itemId == R.id.delete){
             Log.i(Util.myTag, "Delete being pressed")
-            val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+            val homeViewModel by viewModels<HomeViewModel>{
+                HomeViewModelFactory(RunRepository(RunRoomDatabase.getDatabase(this.requireActivity().application, lifecycleScope).runDao()))
+            }
             homeViewModel.delete(runEntity)
             findNavController().navigate(R.id.global_go_home)
 

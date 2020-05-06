@@ -84,7 +84,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     apply plugin: "androidx.navigation.safeargs"
 
-    implementation "androidx.lifecycle:lifecycle-extensions:$archLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:2.2.0"
 
 
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
@@ -102,10 +102,12 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
-    debugImplementation "androidx.fragment:fragment-testing:1.2.1"
+    debugImplementation "androidx.fragment:fragment-testing:1.2.4"
     androidTestImplementation "androidx.navigation:navigation-runtime-ktx:$nav_version"
     androidTestImplementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     androidTestImplementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+
+    implementation "androidx.fragment:fragment-ktx:1.2.4"
 
 
     // REPEATED
@@ -116,7 +118,6 @@ dependencies {
 
 
     // REPEATED
-    implementation "androidx.fragment:fragment-testing:$fragmentVersion"
     implementation "androidx.test:core:$androidXTestCoreVersion"
 
     def room_version = "2.2.3"
@@ -141,6 +142,9 @@ dependencies {
 
     kapt "androidx.lifecycle:lifecycle-compiler:$rootProject.archLifecycleVersion"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$rootProject.archLifecycleVersion"
+
+    implementation "androidx.activity:activity-ktx:1.1.0"
+
 
     implementation 'androidx.recyclerview:recyclerview:1.1.0-beta02'
 

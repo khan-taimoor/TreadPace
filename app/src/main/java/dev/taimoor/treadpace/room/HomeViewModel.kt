@@ -1,19 +1,16 @@
 package dev.taimoor.treadpace.room
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
-class HomeViewModel(application: Application) : AndroidViewModel(application) {
-    private val repository: RunRepository
+class HomeViewModel(private val repository: RunRepository) : ViewModel() {
 
     val allRuns: LiveData<List<RunEntity>>
 
     init {
-        val runDao = RunRoomDatabase.getDatabase(application, viewModelScope).runDao()
-        repository = RunRepository(runDao)
+//        val runDao = RunRoomDatabase.getDatabase(application, viewModelScope).runDao()
+//        repository = RunRepository(runDao)
         allRuns = repository.getRuns()
 
     }
@@ -28,4 +25,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+}
+
+@Suppress("UNCHECKED_CAST")
+class HomeViewModelFactory (
+    private val runRepository: RunRepository
+) : ViewModelProvider.NewInstanceFactory() {
+    override fun <T : ViewModel> create(modelClass: Class<T>) =
+        (HomeViewModel(runRepository) as T)
 }
