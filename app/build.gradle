@@ -90,7 +90,6 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidXTestExtKotlinRunnerVersion"
 
     // REPEATED DEPENDENCY
-    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
 
     // REPEATED DEPENDENCY
     testImplementation "junit:junit:$junitVersion"
@@ -157,5 +156,12 @@ dependencies {
 
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
 
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+
+    androidTestImplementation "org.mockito:mockito-core:$mockitoVersion"
+
+    androidTestImplementation "com.linkedin.dexmaker:dexmaker-mockito:$dexMakerVersion"
+
+    androidTestImplementation "androidx.test.espresso:espresso-contrib:$espressoVersion"
 
 }

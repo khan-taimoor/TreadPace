@@ -1,10 +1,8 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.room
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
-import dev.taimoor.treadpace.room.RunDao
-import dev.taimoor.treadpace.room.RunEntity
 
 class FakeAndroidTestRepository(val runs: MutableList<RunEntity> = mutableListOf()) : RunDao {
     override fun getRuns(): LiveData<List<RunEntity>> {
