@@ -12,26 +12,26 @@ abstract class RunRoomDatabase : RoomDatabase() {
 
     abstract fun runDao(): RunDao
 
-    companion object {
-        @Volatile
-
-        private var INSTANCE: RunRoomDatabase? = null
-
-        fun getDatabase(context: Context, scope: CoroutineScope): RunRoomDatabase {
-            val tempInstance = INSTANCE
-            if (tempInstance != null) {
-                return tempInstance
-            }
-            synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    RunRoomDatabase::class.java,
-                    "treadmill_database"
-                ).build()
-                INSTANCE = instance
-                return instance
-            }
-        }
-    }
+//    companion object {
+//        @Volatile
+//
+//        private var INSTANCE: RunRoomDatabase? = null
+//
+//        fun getDatabase(context: Context, scope: CoroutineScope): RunRoomDatabase {
+//            val tempInstance = INSTANCE
+//            if (tempInstance != null) {
+//                return tempInstance
+//            }
+//            synchronized(this) {
+//                val instance = Room.databaseBuilder(
+//                    context.applicationContext,
+//                    RunRoomDatabase::class.java,
+//                    "treadmill_database"
+//                ).build()
+//                INSTANCE = instance
+//                return instance
+//            }
+//        }
+//    }
 
 }

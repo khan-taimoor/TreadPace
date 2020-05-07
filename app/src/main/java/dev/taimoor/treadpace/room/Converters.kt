@@ -4,8 +4,8 @@ import androidx.room.TypeConverter
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import dev.taimoor.treadpace.RunInfo
-import dev.taimoor.treadpace.Split
+import dev.taimoor.treadpace.data.RunInfo
+import dev.taimoor.treadpace.data.Split
 import java.lang.reflect.Type
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter

@@ -1,4 +1,4 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.homeFragment
 
 import android.content.Context
 import android.content.IntentSender
@@ -6,13 +6,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.navArgs
+import androidx.fragment.app.viewModels
 import androidx.navigation.navOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.preference.PreferenceManager
@@ -20,9 +22,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import dev.taimoor.treadpace.room.HomeViewModel
-import dev.taimoor.treadpace.room.RunEntity
-import dev.taimoor.treadpace.room.RunListAdapter
+import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
+import dev.taimoor.treadpace.R
+import dev.taimoor.treadpace.TodoApplication
+import dev.taimoor.treadpace.Util
+import dev.taimoor.treadpace.room.*
 import kotlinx.android.synthetic.main.home_layout.*
 
 class HomeFragment : Fragment() {
@@ -63,9 +67,12 @@ class HomeFragment : Fragment() {
         recyclerView.adapter = adapter
         recyclerView.layoutManager = LinearLayoutManager(this.context as Context)
 
-        val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
-        homeViewModel.allRuns.observe(this, Observer { runs ->
+        val homeViewModel by viewModels<HomeViewModel>{
+            HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
+        }
+
+        homeViewModel.allRuns.observe(viewLifecycleOwner, Observer { runs ->
             runs?.let { adapter.setRuns(it) }
         })
 
@@ -83,8 +90,7 @@ class HomeFragment : Fragment() {
         }
 
         fab?.setOnClickListener {
-            val action = HomeFragmentDirections
-                .actionHomeFragmentToRunFragment()
+            val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()
                 .setFastestInterval(10000)
                 .setInterval(5000)
                 .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)

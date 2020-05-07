@@ -1,29 +1,21 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.data
 
-import android.app.IntentService
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.IntentSender
 import android.location.Location
 import android.os.*
 import android.util.Log
-import android.widget.Toast
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
-import androidx.fragment.app.Fragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
-import com.google.android.gms.tasks.Task
-import java.io.FileDescriptor
+import dev.taimoor.treadpace.MainActivity
+import dev.taimoor.treadpace.R
+import dev.taimoor.treadpace.Util
 import java.util.*
-import kotlin.properties.Delegates
 
 class RunLocationService: Service() {
 

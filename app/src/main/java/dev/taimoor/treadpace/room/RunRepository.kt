@@ -6,6 +6,12 @@ class RunRepository(private val runDao: RunDao) {
 
     val allRuns: LiveData<List<RunEntity>> = runDao.getRuns()
 
+
+
+    fun getRuns(): LiveData<List<RunEntity>> {
+        return runDao.getRuns()
+    }
+
     suspend fun insert(run: RunEntity){
         runDao.insert(run)
     }

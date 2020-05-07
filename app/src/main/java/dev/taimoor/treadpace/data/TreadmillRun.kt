@@ -1,13 +1,13 @@
-package dev.taimoor.treadpace
+package dev.taimoor.treadpace.data
 
-import android.util.Log
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
 import dev.taimoor.treadpace.runFragment.Phase
 import dev.taimoor.treadpace.runFragment.RunViewModel
 import dev.taimoor.treadpace.runFragment.Tick
 
-class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
+class TreadmillRun(val viewModel: RunViewModel?) :
+    RunInterface {
     override val bnds: LatLngBounds.Builder
     override val points: MutableList<LatLng>
     var currentDistance = 0
@@ -133,7 +133,7 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
 
     private fun paceDeltaTest(split: Split, builder: RunOrder.RunOrderBuilder){
         val paceDifference = kotlin.math.abs(split.getPace() - averagePace())
-        Log.i(Util.myTag, "pace difference: $paceDifference")
+        //Log.i(Util.myTag, "pace difference: $paceDifference")
 
         if(paceDifference < .5){
             split.onTreadmill = true
@@ -184,7 +184,14 @@ class TreadmillRun(val viewModel: RunViewModel?) : RunInterface {
     }
 
     fun getRunInfo(timeInSeconds: Int): RunInfo {
-        return RunInfo(averagePace(), timeInSeconds, currentDistance, sizeSplits(), timesOnTreadmill, getLatLngBounds())
+        return RunInfo(
+            averagePace(),
+            timeInSeconds,
+            currentDistance,
+            sizeSplits(),
+            timesOnTreadmill,
+            getLatLngBounds()
+        )
     }
 
     override fun updateViewModel(runViewModel: RunViewModel, builder: RunOrder.RunOrderBuilder) {

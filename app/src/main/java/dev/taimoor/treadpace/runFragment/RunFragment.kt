@@ -21,15 +21,14 @@ import android.widget.Chronometer
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.FragmentActivity
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.preference.PreferenceManager
 import com.google.android.gms.maps.model.PolylineOptions
 import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
+import dev.taimoor.treadpace.data.RunLocationService
+import dev.taimoor.treadpace.data.TreadmillRun
 import dev.taimoor.treadpace.databinding.RunLayoutBinding
 import dev.taimoor.treadpace.postRunFragment.UnitSettingViewModelFactory
 import dev.taimoor.treadpace.room.RunEntity

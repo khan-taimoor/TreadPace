@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.RecyclerView
-import dev.taimoor.treadpace.HomeFragmentDirections
+import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.databinding.RecyclerviewItemBinding
@@ -28,7 +28,6 @@ class RunListAdapter internal constructor(context: Context) :
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RunViewHolder {
-        val itemView = inflater.inflate(R.layout.recyclerview_item, parent, false)
         val recyclerviewItemBinding = RecyclerviewItemBinding.inflate(inflater, parent, false)
         return RunViewHolder(recyclerviewItemBinding)
     }

@@ -7,13 +7,15 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import androidx.activity.addCallback
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -30,11 +32,11 @@ import com.robinhood.spark.SparkAdapter
 import com.robinhood.spark.SparkView
 import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
-import dev.taimoor.treadpace.RunInfo
-import dev.taimoor.treadpace.Split
+import dev.taimoor.treadpace.data.RunInfo
+import dev.taimoor.treadpace.data.Split
 import dev.taimoor.treadpace.databinding.PostRunBinding
-import dev.taimoor.treadpace.room.HomeViewModel
-import dev.taimoor.treadpace.room.RunEntity
+import dev.taimoor.treadpace.databinding.PostRunPhase2BindingImpl
+import dev.taimoor.treadpace.room.*
 import dev.taimoor.treadpace.settings.UnitSetting
 import kotlinx.android.synthetic.main.post_run.*
 import kotlinx.android.synthetic.main.run_layout.map_view
@@ -50,6 +52,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
     private var splits : Array<Split>? = null
     private var runInfo: RunInfo? = null
     private var polyline: Polyline? = null
+    private var savingRun : Boolean ? = null
 
     private var currentIndexSplit : Int? = null
 
@@ -60,14 +63,14 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
     private lateinit var viewModel : PostRunViewModel
-    lateinit var binding: PostRunBinding
+    lateinit var binding: PostRunPhase2BindingImpl
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val callback = requireActivity().onBackPressedDispatcher.addCallback(this){
-            findNavController().navigate(R.id.global_go_home)
+            exitPrompt()
         }
         callback.isEnabled = true
 
@@ -98,7 +101,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
         this.binding = DataBindingUtil.inflate(inflater,
-            R.layout.post_run, container, false)
+            R.layout.post_run_phase_2, container, false)
         binding.viewmodel = this.viewModel
         binding.lifecycleOwner = this@PostRunFragment
 
@@ -112,21 +115,24 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         this.points = runEntity.points
         this.splits = runEntity.splits
         this.runInfo = runEntity.runInfo
+        this.savingRun = safeArgs.savingRun
+
+        viewModel.savingRun.postValue(this.savingRun)
 
         polylineOptions = PolylineOptions().color(Color.RED).width(10f)
         polylineOptions.addAll(points?.toList())
         this.map?.addPolyline(polylineOptions)
+        this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(points?.last(), 15.0f))
 
 
 
-        loadLayout(R.layout.post_run_phase_2)
+        //loadLayout(R.layout.post_run_phase_2)
 
 //        val cu = CameraUpdateFactory.newLatLngBounds(runInfo?.bounds, 200)
 //
 //        //val callba
 //        this.map?.animateCamera(cu )
 
-        this.map?.moveCamera(CameraUpdateFactory.newLatLngZoom(points?.last(), 15.0f))
 
         if(splits?.size != null){
 
@@ -164,7 +170,9 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
             save_run_button.setOnClickListener {
-                val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+                val homeViewModel by viewModels<HomeViewModel>{
+                    HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
+                }
                 homeViewModel.insert(runEntity)
                 findNavController().navigate(R.id.global_go_home)
 
@@ -250,7 +258,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
 
         val transition = AutoTransition()
-        transition.duration = 300
+        transition.duration = 500
         transition.addListener(TranListener(runInfo?.bounds, this.map))
 
 
@@ -276,7 +284,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         override fun onTransitionEnd(transition: Transition) {
             val cu = CameraUpdateFactory.newLatLngBounds(bounds, 200)
 
-            map?.animateCamera(cu )
+            map?.animateCamera(cu)
 
             Log.i(Util.myTag, "End")
 
@@ -311,11 +319,13 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if(item.itemId == android.R.id.home){
-            findNavController().navigate(R.id.global_go_home)
+            exitPrompt()
         }
         else if(item.itemId == R.id.delete){
             Log.i(Util.myTag, "Delete being pressed")
-            val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+            val homeViewModel by viewModels<HomeViewModel>{
+                HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
+            }
             homeViewModel.delete(runEntity)
             findNavController().navigate(R.id.global_go_home)
 
@@ -333,13 +343,38 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
             inflater.inflate(R.menu.post_run_menu, menu)
         }
     }
+
+    private fun exitPrompt(){
+
+        if (this.savingRun!!) {
+            val builder: AlertDialog.Builder? = this.activity?.let {
+                AlertDialog.Builder(it)
+            }
+
+            builder.apply {
+                this?.setTitle("Exit without saving?")
+                this?.setPositiveButton("Exit") { dialog, id ->
+                    findNavController().navigate(R.id.global_go_home)
+                }
+                this?.setNegativeButton("Stay") { dialog, id ->
+                    //do nothing
+                }
+            }
+
+
+            builder?.show()
+        } else {
+            findNavController().navigate(R.id.global_go_home)
+        }
+    }
+
 }
 @BindingAdapter("app:showIfSavingRun")
 fun showIfSavingRun(view: View, savingRun: Boolean){
     Log.i(Util.myTag, "in show if saving run, savingRun = $savingRun")
-    if(!savingRun){
-        view.visibility = View.GONE
-    }
-    //view.visibility = if (savingRun) View.VISIBLE else View.GONE
+//    if(!savingRun){
+//        view.visibility = View.GONE
+//    }
+    view.visibility = if (savingRun) View.VISIBLE else View.GONE
 }
 
