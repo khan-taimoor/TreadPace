@@ -24,6 +24,7 @@ import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
 import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
 import dev.taimoor.treadpace.R
+import dev.taimoor.treadpace.TodoApplication
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.room.*
 import kotlinx.android.synthetic.main.home_layout.*
@@ -68,9 +69,8 @@ class HomeFragment : Fragment() {
 
 
         val homeViewModel by viewModels<HomeViewModel>{
-            HomeViewModelFactory(RunRepository(RunRoomDatabase.getDatabase(this.requireActivity().application, lifecycleScope).runDao()))
+            HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
         }
-        //val homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
 
         homeViewModel.allRuns.observe(viewLifecycleOwner, Observer { runs ->
             runs?.let { adapter.setRuns(it) }
