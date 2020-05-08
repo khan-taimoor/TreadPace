@@ -13,9 +13,7 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.preference.PreferenceManager
@@ -34,7 +32,6 @@ import dev.taimoor.treadpace.*
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.data.RunInfo
 import dev.taimoor.treadpace.data.Split
-import dev.taimoor.treadpace.databinding.PostRunBinding
 import dev.taimoor.treadpace.databinding.PostRunPhase2BindingImpl
 import dev.taimoor.treadpace.room.*
 import dev.taimoor.treadpace.settings.UnitSetting
@@ -174,8 +171,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
                     HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
                 }
                 homeViewModel.insert(runEntity)
-                findNavController().navigate(R.id.global_go_home)
-
+                val go_home = PostRunFragmentDirections.goHomeMessage(Util.save_run)
+                findNavController().navigate(go_home)
             }
 
 
@@ -327,7 +324,8 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
                 HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
             }
             homeViewModel.delete(runEntity)
-            findNavController().navigate(R.id.global_go_home)
+            val go_home = PostRunFragmentDirections.goHomeMessage(Util.delete_run)
+            findNavController().navigate(go_home)
 
         }
         return true

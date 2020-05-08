@@ -17,6 +17,11 @@ class Util {
         @JvmStatic
         val myTag = "FromTaimoor"
 
+        @JvmStatic
+        val save_run = 1
+        @JvmStatic
+        val delete_run = 2
+
     }
 
 }

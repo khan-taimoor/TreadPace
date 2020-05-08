@@ -1,6 +1,5 @@
 package dev.taimoor.treadpace.room
 
-import android.app.Application
 import androidx.lifecycle.*
 import kotlinx.coroutines.launch
 
