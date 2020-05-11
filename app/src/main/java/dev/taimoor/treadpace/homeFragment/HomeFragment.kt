@@ -16,12 +16,14 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import com.google.android.material.snackbar.Snackbar
 import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.TodoApplication
@@ -51,10 +53,13 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
+        val safeArgs: HomeFragmentArgs by navArgs()
+
+        val message = safeArgs.message
 
 
-        val string = getString(R.string.preference_file)
-        val sharedPref = this.activity?.getPreferences(Context.MODE_PRIVATE)
+//        val string = getString(R.string.preference_file)
+//        val sharedPref = this.activity?.getPreferences(Context.MODE_PRIVATE)
 
 
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.activity?.applicationContext)
@@ -72,6 +77,17 @@ class HomeFragment : Fragment() {
             HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
         }
 
+        if(message == Util.delete_run){
+            val mySnackbar = Snackbar.make(coordinator, R.string.delete_run_message, Snackbar.LENGTH_SHORT)
+            mySnackbar.show()
+        }
+
+        if(message == Util.save_run){
+            val mySnackbar = Snackbar.make(coordinator, R.string.save_run_message, Snackbar.LENGTH_SHORT)
+            mySnackbar.show()
+
+        }
+
         homeViewModel.allRuns.observe(viewLifecycleOwner, Observer { runs ->
             runs?.let { adapter.setRuns(it) }
         })
@@ -80,14 +96,14 @@ class HomeFragment : Fragment() {
 
 
 
-        val options = navOptions {
-            anim {
-                enter = R.anim.slide_in_right
-                exit = R.anim.slide_out_left
-                popEnter = R.anim.slide_in_left
-                popExit = R.anim.slide_out_right
-            }
-        }
+//        val options = navOptions {
+//            anim {
+//                enter = R.anim.slide_in_right
+//                exit = R.anim.slide_out_left
+//                popEnter = R.anim.slide_in_left
+//                popExit = R.anim.slide_out_right
+//            }
+//        }
 
         fab?.setOnClickListener {
             val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()

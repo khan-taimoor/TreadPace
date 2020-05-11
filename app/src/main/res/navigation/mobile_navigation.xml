@@ -12,6 +12,11 @@
         android:label="TreadPace"
         tools:layout="@layout/home_layout">
 
+        <argument
+            android:name="message"
+            android:defaultValue="0"
+            app:argType="integer" />
+
         <action
             android:id="@+id/action_homeFragment_to_runFragment"
             app:destination="@id/runFragment">
@@ -101,12 +106,28 @@
             android:name="savingRun"
             android:defaultValue="true"
             app:argType="boolean" />
+
+        <action
+            android:id="@+id/go_home_message"
+            app:destination="@id/homeFragment"
+            app:popUpTo="@id/homeFragment"
+            app:launchSingleTop="true">
+            <argument
+                android:name="message"
+                app:argType="integer" />
+        </action>
     </fragment>
 
     <action
         android:id="@+id/global_go_home"
-        app:popUpTo="@id/homeFragment"/>
-    <fragment
+        app:popUpTo="@id/homeFragment">
+    </action>
+
+
+
+
+
+<fragment
         android:id="@+id/settingsFragment"
         android:name="dev.taimoor.treadpace.settings.SettingsFragment"
         android:label="Settings"

@@ -82,8 +82,8 @@ class RunLocationService: Service() {
         pendingIntent = PendingIntent.getActivity(this, 0, intent, 0)
 
         val builder = NotificationCompat.Builder(this as Context, "60")
-        builder.setContentTitle("Notification Title")
-            .setContentText("Notification text")
+        builder.setContentTitle("Run in progress")
+            .setContentText("Click for more info")
             .setContentIntent(pendingIntent)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

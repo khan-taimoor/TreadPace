@@ -106,3 +106,6 @@ app/src/main/res/values/api-keys.xml
 ./idea/*.*
 
 app/src/main/res/values/GoogleMapsApiKey.xml
+
+
+experimental.md
