@@ -12,9 +12,4 @@ import dev.taimoor.treadpace.room.RunRepository
 class TodoApplication : Application() {
     val runRepository: RunRepository
         get() = ServiceLocator.provideRunRepository(this)
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
 }

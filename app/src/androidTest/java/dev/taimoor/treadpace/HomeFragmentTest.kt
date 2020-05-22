@@ -1,6 +1,7 @@
 package dev.taimoor.treadpace
 
 import android.os.Bundle
+import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -31,6 +32,7 @@ import dev.taimoor.treadpace.postRunFragment.PostRunFragmentDirections
 import dev.taimoor.treadpace.room.FakeAndroidTestRepository
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
+import java.time.ZoneOffset
 
 
 @MediumTest
@@ -52,13 +54,15 @@ class HomeFragmentTest{
 
     @Test
     fun testHomeFragment() = runBlockingTest {
-        val run1 = RunEntity(RunInfo(0.0, 0, 0, 2, 2, LatLngBounds(LatLng(1.0, 1.0), LatLng(2.0, 2.0))), emptyArray(), emptyArray(), OffsetDateTime.now())
-        val run2 = RunEntity(RunInfo(0.0, 0, 0, 2, 2, LatLngBounds(LatLng(1.0, 1.0), LatLng(2.0, 2.0))), emptyArray(), emptyArray(), OffsetDateTime.now())
-        val run3 = RunEntity(RunInfo(0.0, 0, 0, 2, 2, LatLngBounds(LatLng(1.0, 1.0), LatLng(2.0, 2.0))), emptyArray(), emptyArray(), OffsetDateTime.now())
+        val run2 = RunEntity(RunInfo(10000.0, 1200, 10000, 2, 2,
+            LatLngBounds(LatLng(1.0, 1.0), LatLng(2.0, 2.0))), emptyArray(), emptyArray(),
+            OffsetDateTime.of(2020, 5, 10, 0, 0, 0, 0, ZoneOffset.MIN))
+        val run1 = RunEntity(RunInfo(10000.0, 600, 5000, 2, 2, LatLngBounds(LatLng(1.0, 1.0), LatLng(2.0, 2.0))), emptyArray(), emptyArray(), OffsetDateTime.now())
+//        val run3 = RunEntity(RunInfo(0.0, 0, 0, 2, 2, LatLngBounds(LatLng(1.0, 1.0), LatLng(2.0, 2.0))), emptyArray(), emptyArray(), OffsetDateTime.now())
 
         repository.insert(run1)
         repository.insert(run2)
-        repository.insert(run3)
+//        repository.insert(run3)
 
         val bndl = Bundle()
         bndl.putInt("message", 0)
@@ -69,6 +73,7 @@ class HomeFragmentTest{
             Navigation.setViewNavController(it.view!!, navController)
         }
 
+        Thread.sleep(10000)
 //        // WHEN - Click on the first list item
 //        onView(withId(R.id.recyclerview))
 //            .perform(
