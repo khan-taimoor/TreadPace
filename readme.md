@@ -17,6 +17,6 @@ TreadPace bridges this gap by taking the first three splits (roughly 30 seconds)
 
 ## Screenshots
 
-<img src="images/home_screen.png" alt="Home screen" width="50%" height="50%" /> <img src="images/run_before.png" alt="Before run"  width="50%" height="50%" /> 
-![Run in progress](images/run_inprogress.png)
-![Review run](images/review.png)
+<img src="images/home_screen.png" alt="Home screen" width="45%" height="45%" /> <img src="images/run_before.png" alt="Before run"  width="45%" height="45%" /> 
+<img src="images/run_inprogress.png" alt="Run in progress" width="45%" height="45%" /> <img src="images/review.png" alt="Review run"  width="45%" height="45%" /> 
+
