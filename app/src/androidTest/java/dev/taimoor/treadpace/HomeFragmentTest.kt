@@ -1,5 +1,6 @@
 package dev.taimoor.treadpace
 
+import android.os.Bundle
 import androidx.fragment.app.testing.launchFragmentInContainer
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
@@ -26,6 +27,7 @@ import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
 import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
+import dev.taimoor.treadpace.postRunFragment.PostRunFragmentDirections
 import dev.taimoor.treadpace.room.FakeAndroidTestRepository
 import org.mockito.Mockito.mock
 import org.mockito.Mockito.verify
@@ -58,7 +60,9 @@ class HomeFragmentTest{
         repository.insert(run2)
         repository.insert(run3)
 
-        val scenario = launchFragmentInContainer<HomeFragment>(null, R.style.AppTheme)
+        val bndl = Bundle()
+        bndl.putInt("message", 0)
+        val scenario = launchFragmentInContainer<HomeFragment>(bndl, R.style.AppTheme)
 
         val navController = mock(NavController::class.java)
         scenario.onFragment {
