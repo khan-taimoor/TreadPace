@@ -7,14 +7,10 @@ import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.navOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.onNavDestinationSelected
@@ -24,9 +20,8 @@ import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
-import dev.taimoor.treadpace.homeFragment.HomeFragmentDirections
 import dev.taimoor.treadpace.R
-import dev.taimoor.treadpace.TodoApplication
+import dev.taimoor.treadpace.RunRepoApplication
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.room.*
 import kotlinx.android.synthetic.main.home_layout.*
@@ -74,7 +69,7 @@ class HomeFragment : Fragment() {
 
 
         val homeViewModel by viewModels<HomeViewModel>{
-            HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
+            HomeViewModelFactory(((requireContext().applicationContext as RunRepoApplication).runRepository))
         }
 
         if(message == Util.delete_run){

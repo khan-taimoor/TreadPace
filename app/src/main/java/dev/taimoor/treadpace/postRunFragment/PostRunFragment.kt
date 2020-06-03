@@ -211,7 +211,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
 
             save_run_button.setOnClickListener {
                 val homeViewModel by viewModels<HomeViewModel>{
-                    HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
+                    HomeViewModelFactory(((requireContext().applicationContext as RunRepoApplication).runRepository))
                 }
                 homeViewModel.insert(runEntity)
                 val go_home = PostRunFragmentDirections.goHomeMessage(Util.save_run)
@@ -364,7 +364,7 @@ class PostRunFragment : Fragment(), OnMapReadyCallback {
         else if(item.itemId == R.id.delete){
             Log.i(Util.myTag, "Delete being pressed")
             val homeViewModel by viewModels<HomeViewModel>{
-                HomeViewModelFactory(((requireContext().applicationContext as TodoApplication).runRepository))
+                HomeViewModelFactory(((requireContext().applicationContext as RunRepoApplication).runRepository))
             }
             homeViewModel.delete(runEntity)
             val go_home = PostRunFragmentDirections.goHomeMessage(Util.delete_run)
