@@ -2,11 +2,11 @@
 
 ## Introduction
 
-TreadPace is a GPS running application for android that tracks the beginning of a user's run and uses that as their baseline "treadmill" pace for the duration of the run.
+TreadPace is a GPS running application for Android that tracks the beginning of a user's run and uses that as their baseline treadmill pace for the duration of the run.
 
 ## Installation
 
-TreadPace is (soon to be) available on the Google Play store. To install & run TreadPace yourself, the repository can be cloned and an XML string resource named GoogleMapsAPIKey can be created that has the Google Maps SDK for Android enabled.
+TreadPace is (soon to be) available on the Google Play store. To install & run TreadPace yourself, clone the repository and create an XML string resource named GoogleMapsAPIKey that has the Google Maps SDK for Android enabled.
 
 ## Overview
 
@@ -20,3 +20,8 @@ TreadPace bridges this gap by taking the first three splits (roughly 30 seconds)
 <img src="images/home_screen.png" alt="Home screen" width="45%" height="45%" /> <img src="images/run_before.png" alt="Before run"  width="45%" height="45%" /> 
 <img src="images/run_inprogress.png" alt="Run in progress" width="45%" height="45%" /> <img src="images/review.png" alt="Review run"  width="45%" height="45%" /> 
 
+## Improvements to make
+- Handle permissions more gracefully.
+- Improve UI/UX on run page (make it more clear what numbers represent).
+- Improve tracking capabilities (throw out outlier points, etc.).
+- Allow more options for pace checking (% threshold, flat amounts).
