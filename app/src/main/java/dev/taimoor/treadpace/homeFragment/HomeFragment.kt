@@ -5,12 +5,14 @@ import android.content.IntentSender
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.onNavDestinationSelected
@@ -19,15 +21,19 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
+import com.google.android.gms.tasks.Tasks
 import com.google.android.material.snackbar.Snackbar
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.RunRepoApplication
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.room.*
 import kotlinx.android.synthetic.main.home_layout.*
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
+
+    var bool : Boolean = false
 
 
 
@@ -51,12 +57,6 @@ class HomeFragment : Fragment() {
         val safeArgs: HomeFragmentArgs by navArgs()
 
         val message = safeArgs.message
-
-
-//        val string = getString(R.string.preference_file)
-//        val sharedPref = this.activity?.getPreferences(Context.MODE_PRIVATE)
-
-
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.activity?.applicationContext)
 
         Log.i(Util.myTag, "VALUE FROM SHAREDMAP: ${sharedPreferences.getString("units", "")}")
@@ -80,7 +80,6 @@ class HomeFragment : Fragment() {
         if(message == Util.save_run){
             val mySnackbar = Snackbar.make(coordinator, R.string.save_run_message, Snackbar.LENGTH_SHORT)
             mySnackbar.show()
-
         }
 
         homeViewModel.allRuns.observe(viewLifecycleOwner, Observer { runs ->
@@ -89,6 +88,7 @@ class HomeFragment : Fragment() {
 
         val fab = view.findViewById<FloatingActionButton>(R.id.fab)
 
+        this.bool = false
 
 
 //        val options = navOptions {
@@ -100,67 +100,77 @@ class HomeFragment : Fragment() {
 //            }
 //        }
 
+
+
+
         fab?.setOnClickListener {
-            val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()
-                .setFastestInterval(10000)
-                .setInterval(5000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setLocationRequest(createLocationRequest())
-            findNavController().navigate(action)
+            createLocationRequest()
         }
 
         fab?.show()
     }
 
     // from Google
-    fun createLocationRequest(): LocationRequest? {
-        val locationRequest = LocationRequest.create()?.apply {
+    fun createLocationRequest(): Pair<LocationRequest?, Boolean> {
+
+        val locationRequest = LocationRequest.create().apply {
             interval = 10000
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
 
-        var builder: LocationSettingsRequest.Builder? = null
-        var client: SettingsClient? = null
+        var builder: LocationSettingsRequest.Builder
+        var client: SettingsClient
 
-        locationRequest?.let {
+        locationRequest.let {
             builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
         }
 
-        this?.let {
+        this.let {
             client = LocationServices.getSettingsClient(this.context as Context)
         }
 
-        var task: Task<LocationSettingsResponse>? = null
-        Log.d("In run fragment", "Making sure I get here.")
+        val task: Task<LocationSettingsResponse> = client.checkLocationSettings(builder.build())
 
-        Util.safeLet(builder, client) { b, c ->
-            task = c.checkLocationSettings(b.build())
+        task.addOnSuccessListener { locationSettingsResponse ->
+            this@HomeFragment.bool = true
+            //Toast.makeText(this@HomeFragment.context, "success", Toast.LENGTH_SHORT).show()
+
+            val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()
+                .setFastestInterval(10000)
+                .setInterval(5000)
+                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                .setLocationRequest(locationRequest)
+            findNavController().navigate(action)
+
         }
 
+        task.addOnFailureListener { exception ->
 
-        task?.addOnSuccessListener { locationSettingsResponse ->
-            //Toast.makeText(context, "location settings request MADE", Toast.LENGTH_LONG).show()
-        }
-
-        task?.addOnFailureListener { exception ->
-
-            //Toast.makeText(context, "location settings request FAILED", Toast.LENGTH_LONG).show()
+            //Toast.makeText(this@HomeFragment.context, "FAILURE", Toast.LENGTH_SHORT).show()
+            Log.i(Util.myTag, "failed")
             if (exception is ResolvableApiException) {
                 // Location settings are not satisfied, but this can be fixed
                 // by showing the user a dialog.
+                this@HomeFragment.bool = false
                 try {
-                    // Show the dialog by calling startResolutionForResult(),
-                    // and check the result in onActivityResult().
-                    exception.startResolutionForResult(this.activity, 1)
-
+                    // TODO: show a custom message? something more informative
+                    //exception.startResolutionForResult(this.activity, 1)
+                    startIntentSenderForResult(exception.resolution.intentSender, 0, null, 0, 0, 0, null);
                 } catch (sendEx: IntentSender.SendIntentException) {
-                    // Ignore the error.
                 }
             }
         }
 
-        return locationRequest
+
+
+
+
+
+
+        return Pair(locationRequest, this@HomeFragment.bool)
+
+
     }
 
 
