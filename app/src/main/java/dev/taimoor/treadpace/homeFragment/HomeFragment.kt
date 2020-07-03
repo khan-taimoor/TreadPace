@@ -1,18 +1,22 @@
 package dev.taimoor.treadpace.homeFragment
 
+import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import android.content.IntentSender
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.*
-import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.onNavDestinationSelected
@@ -21,14 +25,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.common.api.ResolvableApiException
 import com.google.android.gms.location.*
 import com.google.android.gms.tasks.Task
-import com.google.android.gms.tasks.Tasks
 import com.google.android.material.snackbar.Snackbar
 import dev.taimoor.treadpace.R
 import dev.taimoor.treadpace.RunRepoApplication
 import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.room.*
 import kotlinx.android.synthetic.main.home_layout.*
-import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
 
@@ -60,8 +62,24 @@ class HomeFragment : Fragment() {
         val sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.activity?.applicationContext)
 
         Log.i(Util.myTag, "VALUE FROM SHAREDMAP: ${sharedPreferences.getString("units", "")}")
-        
-        
+
+        val requestPermissionLauncher =
+            this.activity?.registerForActivityResult(
+                ActivityResultContracts.RequestPermission()
+            ) { isGranted: Boolean ->
+                if (isGranted) {
+                    // TODO: Navigate to activity, also confirm that this block of code gets reached
+                    // Permission is granted. Continue the action or workflow in your
+                    // app.
+                } else {
+                    // Explain to the user that the feature is unavailable because the
+                    // features requires a permission that the user has denied. At the
+                    // same time, respect the user's decision. Don't link to system
+                    // settings in an effort to convince the user to change their
+                    // decision.
+                }
+            }
+
         val recyclerView = recyclerview
         val adapter = RunListAdapter(this.context as Context)
         recyclerView.adapter = adapter
@@ -123,7 +141,7 @@ class HomeFragment : Fragment() {
         var client: SettingsClient
 
         locationRequest.let {
-            builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest)
+            builder = LocationSettingsRequest.Builder().addLocationRequest(locationRequest).setAlwaysShow(true)
         }
 
         this.let {
@@ -136,14 +154,70 @@ class HomeFragment : Fragment() {
             this@HomeFragment.bool = true
             //Toast.makeText(this@HomeFragment.context, "success", Toast.LENGTH_SHORT).show()
 
-            val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()
-                .setFastestInterval(10000)
-                .setInterval(5000)
-                .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-                .setLocationRequest(locationRequest)
-            findNavController().navigate(action)
+
+
+            when {
+                ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) == PackageManager.PERMISSION_GRANTED -> {
+
+                    val action = HomeFragmentDirections.actionHomeFragmentToRunFragment()
+                        .setFastestInterval(10000)
+                        .setInterval(5000)
+                        .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                        .setLocationRequest(locationRequest)
+
+                    findNavController().navigate(action)
+                }
+                // Sometimes this doesn't show up if permissions weren't set?
+                (shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_FINE_LOCATION)
+                        || shouldShowRequestPermissionRationale(Manifest.permission.ACCESS_COARSE_LOCATION)
+                        || shouldShowRequestPermissionRationale(Manifest.permission.FOREGROUND_SERVICE)) -> {
+
+                    val blder: AlertDialog.Builder? = this.activity?.let {
+                        AlertDialog.Builder(it)
+                    }
+
+                    blder?.setTitle("Request location permission")
+
+                    blder?.setNegativeButton("Deny") { dialog, id ->
+                        Log.i(Util.myTag, "Exit run without saving")
+                    }
+
+                    blder?.setPositiveButton("Allow") { dialog, id ->
+                        ActivityCompat.requestPermissions(
+                            requireActivity(),
+                            arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                            1
+                        )
+                    }
+
+                    blder?.show()
+                }
+                else -> {
+                    ActivityCompat.requestPermissions(
+                        requireActivity(),
+                        arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                        1
+                    )
+                }
+            }
+//                ActivityResultContracts.RequestPermission
+//
+//                shouldShowRequestPermissionRationale(PermissionRequest.)
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            //ActivityCompat.requestPermissions(requireActivity(), )
 
         }
+
+
 
         task.addOnFailureListener { exception ->
 
