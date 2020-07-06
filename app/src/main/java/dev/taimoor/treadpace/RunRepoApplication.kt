@@ -9,12 +9,7 @@ import dev.taimoor.treadpace.room.RunRepository
  *
  * Also, sets up Timber in the DEBUG BuildConfig. Read Timber's documentation for production setups.
  */
-class TodoApplication : Application() {
+class RunRepoApplication : Application() {
     val runRepository: RunRepository
         get() = ServiceLocator.provideRunRepository(this)
-
-    override fun onCreate() {
-        super.onCreate()
-    }
-
 }

@@ -1,7 +1,10 @@
 package dev.taimoor.treadpace.data
 
+import android.util.Log
+import android.widget.Toast
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.LatLngBounds
+import dev.taimoor.treadpace.Util
 import dev.taimoor.treadpace.runFragment.Phase
 import dev.taimoor.treadpace.runFragment.RunViewModel
 import dev.taimoor.treadpace.runFragment.Tick
@@ -132,15 +135,12 @@ class TreadmillRun(val viewModel: RunViewModel?) :
     }
 
     private fun paceDeltaTest(split: Split, builder: RunOrder.RunOrderBuilder){
-        val paceDifference = kotlin.math.abs(split.getPace() - averagePace())
-        //Log.i(Util.myTag, "pace difference: $paceDifference")
-
-        if(paceDifference < .5){
+        if(split.getPace() > averagePace() * .8){
             split.onTreadmill = true
             timesOnTreadmill +=1
             builder.timesOnTreadmill(timesOnTreadmill)
-
         }
+
         builder.numberSplits(splits.size)
     }
 

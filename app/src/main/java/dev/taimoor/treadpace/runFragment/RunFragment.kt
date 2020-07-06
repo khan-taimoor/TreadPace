@@ -1,7 +1,9 @@
 package dev.taimoor.treadpace.runFragment
 
+import android.Manifest
 import android.app.AlertDialog
 import android.content.*
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.location.Location
 import android.os.*
@@ -20,6 +22,7 @@ import android.view.*
 import android.widget.Chronometer
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.app.ActivityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProviders
