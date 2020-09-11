@@ -44,6 +44,8 @@ android {
         includeAndroidResources = true
     }
 
+    
+
     packagingOptions {
         exclude 'META-INF/atomicfu.kotlin_module'
     }
@@ -151,6 +153,8 @@ dependencies {
     testImplementation "org.hamcrest:hamcrest-all:$hamcrestVersion"
     testImplementation "androidx.test.ext:junit-ktx:$androidXTestExtKotlinRunnerVersion"
     testImplementation "androidx.test:core-ktx:$androidXTestCoreVersion"
+    androidTestImplementation "org.robolectric:robolectric:$robolectricVersion"
+
     testImplementation "org.robolectric:robolectric:$robolectricVersion"
     testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
 

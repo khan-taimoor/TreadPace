@@ -38,11 +38,8 @@ class RunRepositoryTest(){
     }
 
     @Test
-    fun getTasks_requestsAllTasksFromRemoteDataSource() = runBlockingTest {
-        // When tasks are requested from the tasks repository
-        val runs = runRepository.getRuns().getOrAwaitValue()
+    fun empty(){
 
-        assertThat(runs.toMutableList(), IsEqual(runList))
     }
 
 }

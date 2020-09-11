@@ -1,5 +1,6 @@
 package dev.taimoor.treadpace.data
 
+import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.PendingIntent
 import android.app.Service
@@ -65,6 +66,7 @@ class RunLocationService: Service() {
         }
     }
 
+    @SuppressLint("MissingPermission")
     private fun startLocationUpdates(locationRequest: LocationRequest) {
         fusedLocationClient.requestLocationUpdates(locationRequest,
             locationCallback,

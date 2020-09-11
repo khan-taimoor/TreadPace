@@ -1,6 +1,7 @@
 package dev.taimoor.treadpace.runFragment
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.*
 import android.content.pm.PackageManager
@@ -154,6 +155,7 @@ class RunFragment : Fragment(), OnMapReadyCallback {
 
     }
 
+    @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap?) {
         MapsInitializer.initialize(context)
         this.map = map

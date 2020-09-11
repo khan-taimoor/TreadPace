@@ -12,6 +12,7 @@ import dev.taimoor.treadpace.settings.UnitSetting
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.junit.Before
 import org.junit.runner.RunWith
 import org.robolectric.annotation.Config
 
@@ -19,27 +20,34 @@ import org.robolectric.annotation.Config
 @RunWith(AndroidJUnit4::class)
 class TreadmillRunTest {
 
-    val runViewModel = RunViewModel(UnitSetting.mi)
-    val testRun = TreadmillRun(runViewModel)
-    val latLngPoint = LatLng(0.0, 0.0)
+    lateinit var testRun : TreadmillRun
+    lateinit var latLngPoint : LatLng
+
+
+    @Before
+    fun before() {
+        val runViewModel = RunViewModel(UnitSetting.mi)
+        testRun = TreadmillRun(runViewModel)
+        latLngPoint = LatLng(0.0, 0.0)
+    }
 
     @Test
     fun testPhaseBefore(){
-        assertEquals(Phase.BEFORE_RUN, testRun.currentPhase)
+        assertEquals(Phase.BEFORE_RUN, testRun?.currentPhase)
     }
 
     @Test
     fun testStartRun(){
         testRun.startRun()
         assertEquals(Phase.PHASE_ONE, testRun.currentPhase)
-        assertEquals(0, testRun.splits.size)
+        assertEquals(0, testRun?.splits.size)
     }
 
     @Test
     fun testPhaseTwoOneTick(){
         testRun.addPointToRun(Tick(30, 0, latLngPoint))
         assertEquals(Phase.PHASE_TWO, testRun.currentPhase)
-        assertEquals(1, testRun.splits.size)
+        assertEquals(1, testRun?.splits.size)
     }
 
     @Test
